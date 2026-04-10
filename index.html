@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="theme-color" content="#FF6B35" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Safety Tracker" />
+  <title>Safety Violation Tracker</title>
+  <link rel="manifest" href="manifest.json" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #FF6B35;
+      --primary-dark: #E55A26;
+      --danger: #E53935;
+      --success: #43A047;
+      --warning: #FB8C00;
+      --bg: #F5F5F5;
+      --card: #FFFFFF;
+      --text: #212121;
+      --text2: #757575;
+      --border: #E0E0E0;
+      --radius: 12px;
+    }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    /* Header */
+    .header {
+      background: var(--primary);
+      color: white;
+      padding: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+    .header h1 { font-size: 18px; font-weight: 700; }
+    .header p { font-size: 12px; opacity: 0.85; }
+    .lang-btn {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.4);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    /* Nav tabs */
+    .nav {
+      display: flex;
+      background: white;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 65px;
+      z-index: 99;
+    }
+    .nav-btn {
+      flex: 1;
+      padding: 12px 4px;
+      border: none;
+      background: none;
+      font-size: 11px;
+      color: var(--text2);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .nav-btn .icon { font-size: 18px; }
+    .nav-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      font-weight: 600;
+    }
+    /* Content */
+    .content { padding: 16px; padding-bottom: 32px; }
+    /* Cards */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    /* Form elements */
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text2);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    select, input[type="text"], input[type="date"], textarea, input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      background: white;
+      color: var(--text);
+      margin-bottom: 12px;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    select:focus, input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    textarea { resize: vertical; min-height: 80px; }
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 12px 20px;
+      border-radius: 8px;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-success { background: var(--success); color: white; }
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid var(--primary);
+      color: var(--primary);
+    }
+    .btn-sm {
+      padding: 8px 14px;
+      font-size: 12px;
+      width: auto;
+    }
+    .btn-row { display: flex; gap: 8px; margin-bottom: 12px; }
+    /* Photo upload */
+    .photo-area {
+      border: 2px dashed var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+      margin-bottom: 12px;
+      background: #FAFAFA;
+    }
+    .photo-area.has-photo { border-color: var(--success); background: #F1F8E9; }
+    .photo-preview {
+      width: 100%;
+      max-height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+    .photo-label {
+      font-size: 12px;
+      color: var(--text2);
+      margin-bottom: 8px;
+    }
+    input[type="file"] { display: none; }
+    /* Status badges */
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .badge-open { background: #FFF3E0; color: #E65100; }
+    .badge-progress { background: #E3F2FD; color: #1565C0; }
+    .badge-closed { background: #E8F5E9; color: #2E7D32; }
+    .badge-high { background: #FFEBEE; color: #C62828; }
+    .badge-medium { background: #FFF8E1; color: #F57F17; }
+    .badge-low { background: #E8F5E9; color: #2E7D32; }
+    .badge-critical { background: #880E4F; color: white; }
+    /* Violation list item */
+    .violation-item {
+      background: white;
+      border-radius: var(--radius);
+      padding: 14px;
+      margin-bottom: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      cursor: pointer;
+      border-left: 4px solid var(--border);
+      transition: all 0.2s;
+    }
+    .violation-item:active { transform: scale(0.98); }
+    .violation-item.open { border-left-color: var(--warning); }
+    .violation-item.closed { border-left-color: var(--success); }
+    .violation-item.in-progress { border-left-color: #1565C0; }
+    .violation-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+    .violation-title { font-size: 14px; font-weight: 700; flex: 1; }
+    .violation-meta { font-size: 12px; color: var(--text2); margin-top: 4px; }
+    .violation-meta span { margin-right: 10px; }
+    /* Progress bar */
+    .progress-bar {
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--success);
+      border-radius: 3px;
+      transition: width 0.5s;
+    }
+    /* Stats row */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .stat-card {
+      background: white;
+      border-radius: 10px;
+      padding: 12px 8px;
+      text-align: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    .stat-num { font-size: 22px; font-weight: 800; }
+    .stat-label { font-size: 10px; color: var(--text2); margin-top: 2px; }
+    /* Login screen */
+    .login-screen {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 24px;
+      background: linear-gradient(135deg, #FF6B35 0%, #E53935 100%);
+    }
+    .login-logo { font-size: 56px; margin-bottom: 16px; }
+    .login-title { font-size: 24px; font-weight: 800; color: white; margin-bottom: 4px; text-align: center; }
+    .login-sub { font-size: 14px; color: rgba(255,255,255,0.8); margin-bottom: 32px; text-align: center; }
+    .login-card {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      width: 100%;
+      max-width: 360px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    }
+    /* Detail view */
+    .detail-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .back-btn {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--primary);
+      padding: 4px;
+    }
+    .photos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+    .photo-box { border-radius: 8px; overflow: hidden; aspect-ratio: 1; background: #EEE; }
+    .photo-box img { width: 100%; height: 100%; object-fit: cover; }
+    .photo-box-label { font-size: 11px; font-weight: 700; padding: 4px 8px; background: rgba(0,0,0,0.6); color: white; }
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #212121;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 24px;
+      font-size: 13px;
+      z-index: 999;
+      white-space: nowrap;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+      animation: slideUp 0.3s ease;
+    }
+    @keyframes slideUp { from { opacity: 0; transform: translateX(-50%) translateY(20px); } }
+    /* Loading */
+    .loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px;
+      color: var(--text2);
+      gap: 12px;
+    }
+    .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .empty-state { text-align: center; padding: 48px 16px; color: var(--text2); }
+    .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+    /* Section header */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .section-title { font-size: 16px; font-weight: 700; }
+    /* Filter row */
+    .filter-row { display: flex; gap: 8px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 4px; }
+    .filter-chip {
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1.5px solid var(--border);
+      background: white;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      color: var(--text2);
+      transition: all 0.2s;
+    }
+    .filter-chip.active { background: var(--primary); color: white; border-color: var(--primary); }
+    /* Admin section */
+    .admin-section { border-top: 1px solid var(--border); margin-top: 12px; padding-top: 12px; }
+    .divider { border: none; border-top: 1px solid var(--border); margin: 12px 0; }
+    .info-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #F5F5F5; }
+    .info-label { font-size: 12px; color: var(--text2); }
+    .info-value { font-size: 13px; font-weight: 600; }
+  </style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+// ============================================================
+// CONFIG — Replace with your actual Supabase credentials
+// ============================================================
+const SUPABASE_URL = 'https://zpmjcdbqynebhyprqmrf.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpwbWpjZGJxeW5lYmh5cHJxbXJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg4MDMyNTksImV4cCI6MjA4NDM3OTI1OX0.68k7Ni0EfEVzKOa-tp9_d5QQ0Xh2u1scv_TdGwnXMtE';
+const APP_PASSWORD = '1234'; // Change this!
+const ADMIN_PASSWORD = 'admin1234'; // Change this!
+const BUCKET = 'safety-violations';
+
+// ============================================================
+// TRANSLATIONS
+// ============================================================
+const T = {
+  en: {
+    appTitle: 'Safety Violation Tracker',
+    appSub: 'Construction Safety Management',
+    login: 'Login',
+    enterPassword: 'Enter Password',
+    password: 'Password',
+    wrongPassword: 'Incorrect password',
+    dashboard: 'Dashboard',
+    report: 'Report',
+    violations: 'Violations',
+    projects: 'Projects',
+    totalViolations: 'Total',
+    openViolations: 'Open',
+    closedViolations: 'Closed',
+    projectName: 'Project',
+    reportedBy: 'Reported By',
+    date: 'Date',
+    violationType: 'Violation Type',
+    severity: 'Severity',
+    locationOnSite: 'Location on Site',
+    description: 'Description (Optional)',
+    actionTaken: 'Action Taken',
+    beforePhoto: 'Before Photo',
+    afterPhoto: 'After Photo',
+    status: 'Status',
+    submit: 'Submit Report',
+    submitting: 'Submitting...',
+    takePhoto: '📷 Camera',
+    uploadPhoto: '📁 Upload File',
+    changePhoto: 'Change Photo',
+    photoReady: '✅ Photo Ready',
+    noPhoto: 'No photo yet',
+    filterAll: 'All',
+    filterOpen: 'Open',
+    filterProgress: 'In Progress',
+    filterClosed: 'Closed',
+    back: '←',
+    updateStatus: 'Update Status',
+    uploadAfterPhoto: 'Upload After Photo',
+    deletePhoto: '🗑 Delete After Photo',
+    confirmDelete: 'Confirm Delete',
+    adminPassword: 'Admin Password',
+    noViolations: 'No violations found',
+    addProject: '+ Add Project',
+    newProjectName: 'New Project Name',
+    add: 'Add',
+    cancel: 'Cancel',
+    reportSuccess: '✅ Report submitted!',
+    reportError: '❌ Error submitting. Try again.',
+    selectProject: 'Select Project',
+    selectType: 'Select Violation Type',
+    selectSeverity: 'Select Severity',
+    selectStatus: 'Select Status',
+    others: 'Others - Please specify',
+    othersDetail: 'Specify Violation',
+    low: 'Low',
+    medium: 'Medium',
+    high: 'High',
+    critical: 'Critical',
+    open: 'Open',
+    inProgress: 'In Progress',
+    closed: 'Closed',
+    progress: 'Progress',
+    cleared: 'cleared',
+    adminSection: 'Admin Actions',
+    downloadPhotos: '⬇ Download All Photos',
+  },
+  zh: {
+    appTitle: '安全违规追踪系统',
+    appSub: '建筑安全管理',
+    login: '登录',
+    enterPassword: '请输入密码',
+    password: '密码',
+    wrongPassword: '密码错误',
+    dashboard: '仪表板',
+    report: '举报',
+    violations: '违规记录',
+    projects: '项目',
+    totalViolations: '总计',
+    openViolations: '未解决',
+    closedViolations: '已解决',
+    projectName: '项目',
+    reportedBy: '报告人',
+    date: '日期',
+    violationType: '违规类型',
+    severity: '严重程度',
+    locationOnSite: '现场位置',
+    description: '描述（可选）',
+    actionTaken: '已采取措施',
+    beforePhoto: '事前照片',
+    afterPhoto: '事后照片',
+    status: '状态',
+    submit: '提交报告',
+    submitting: '提交中...',
+    takePhoto: '📷 拍照',
+    uploadPhoto: '📁 上传文件',
+    changePhoto: '更换照片',
+    photoReady: '✅ 照片已准备',
+    noPhoto: '暂无照片',
+    filterAll: '全部',
+    filterOpen: '未解决',
+    filterProgress: '处理中',
+    filterClosed: '已解决',
+    back: '←',
+    updateStatus: '更新状态',
+    uploadAfterPhoto: '上传事后照片',
+    deletePhoto: '🗑 删除事后照片',
+    confirmDelete: '确认删除',
+    adminPassword: '管理员密码',
+    noViolations: '暂无违规记录',
+    addProject: '+ 添加项目',
+    newProjectName: '新项目名称',
+    add: '添加',
+    cancel: '取消',
+    reportSuccess: '✅ 报告已提交！',
+    reportError: '❌ 提交失败，请重试。',
+    selectProject: '选择项目',
+    selectType: '选择违规类型',
+    selectSeverity: '选择严重程度',
+    selectStatus: '选择状态',
+    others: '其他 - 请说明',
+    othersDetail: '说明违规类型',
+    low: '低',
+    medium: '中',
+    high: '高',
+    critical: '严重',
+    open: '未解决',
+    inProgress: '处理中',
+    closed: '已解决',
+    progress: '进度',
+    cleared: '已清除',
+    adminSection: '管理员操作',
+    downloadPhotos: '⬇ 下载所有照片',
+  }
+};
+
+// ============================================================
+// VIOLATION TYPES
+// ============================================================
+const VIOLATION_TYPES = [
+  'PPE Not Worn', 'Working at Height', 'Scaffolding Unsafe',
+  'Electrical Hazard', 'Fire Hazard', 'Housekeeping',
+  'Machinery Unsafe', 'No Signage', 'Excavation Unsafe',
+  'Chemical Hazard', 'Blocked Emergency Exit', 'Overloaded Platform',
+  'Others'
+];
+
+const VIOLATION_TYPES_ZH = [
+  '未佩戴PPE', '高处作业', '脚手架不安全',
+  '电气危险', '火灾隐患', '环境卫生',
+  '机械不安全', '无标识', '挖掘不安全',
+  '化学危险', '紧急出口堵塞', '平台超载',
+  '其他'
+];
+
+// ============================================================
+// STATE
+// ============================================================
+let state = {
+  lang: 'en',
+  loggedIn: false,
+  tab: 'dashboard',
+  violations: [],
+  projects: ['P202', 'P209', 'P210', 'P211', 'P212', 'P213', 'P216'],
+  loading: false,
+  selectedViolation: null,
+  filter: 'all',
+  form: {
+    project: '',
+    reportedBy: '',
+    date: new Date().toISOString().split('T')[0],
+    violationType: '',
+    othersDetail: '',
+    severity: '',
+    location: '',
+    description: '',
+    actionTaken: '',
+    status: 'Open',
+    beforePhoto: null,
+    afterPhoto: null,
+    beforePreview: null,
+    afterPreview: null,
+  },
+  toast: null,
+  showAddProject: false,
+  newProjectName: '',
+  adminPw: '',
+  deleteConfirm: false,
+  submitLoading: false,
+};
+
+function t(key) { return T[state.lang][key] || key; }
+
+// ============================================================
+// SUPABASE CLIENT (vanilla fetch)
+// ============================================================
+async function supaFetch(path, options = {}) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation',
+      ...options.headers
+    },
+    ...options
+  });
+  if (!res.ok) throw new Error(await res.text());
+  const text = await res.text();
+  return text ? JSON.parse(text) : [];
+}
+
+async function uploadPhoto(file, path) {
+  const compressed = await compressImage(file);
+  const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${path}`, {
+    method: 'POST',
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'image/jpeg',
+      'x-upsert': 'true'
+    },
+    body: compressed
+  });
+  if (!res.ok) throw new Error('Upload failed');
+  return `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${path}`;
+}
+
+async function deletePhoto(path) {
+  await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${path}`, {
+    method: 'DELETE',
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+    }
+  });
+}
+
+// ============================================================
+// IMAGE COMPRESSION
+// ============================================================
+function compressImage(file) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let { width, height } = img;
+        const maxDim = 1200;
+        if (width > maxDim || height > maxDim) {
+          if (width > height) { height = height * maxDim / width; width = maxDim; }
+          else { width = width * maxDim / height; height = maxDim; }
+        }
+        canvas.width = width; canvas.height = height;
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+        canvas.toBlob(resolve, 'image/jpeg', 0.75);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// ============================================================
+// DATA OPERATIONS
+// ============================================================
+async function loadViolations() {
+  state.loading = true; render();
+  try {
+    const data = await supaFetch('violations?order=created_at.desc', {
+      headers: { 'Range': '0-199' }
+    });
+    state.violations = data;
+  } catch(e) {
+    console.error(e);
+    state.violations = [];
+  }
+  state.loading = false; render();
+}
+
+async function submitReport() {
+  const f = state.form;
+  if (!f.project || !f.reportedBy || !f.violationType || !f.severity || !f.location) {
+    showToast('⚠️ Please fill all required fields');
+    return;
+  }
+  if (!f.beforePhoto) { showToast('⚠️ Before photo is required'); return; }
+
+  state.submitLoading = true; render();
+
+  try {
+    const ts = Date.now();
+    const beforePath = `${f.project}/before/${ts}_before.jpg`;
+    const beforeUrl = await uploadPhoto(f.beforePhoto, beforePath);
+
+    let afterUrl = null;
+    if (f.afterPhoto) {
+      const afterPath = `${f.project}/after/${ts}_after.jpg`;
+      afterUrl = await uploadPhoto(f.afterPhoto, afterPath);
+    }
+
+    const violationType = f.violationType === 'Others' ? `Others: ${f.othersDetail}` : f.violationType;
+
+    await supaFetch('violations', {
+      method: 'POST',
+      body: JSON.stringify({
+        project: f.project,
+        reported_by: f.reportedBy,
+        date: f.date,
+        violation_type: violationType,
+        severity: f.severity,
+        location: f.location,
+        description: f.description,
+        action_taken: f.actionTaken,
+        before_photo_url: beforeUrl,
+        after_photo_url: afterUrl,
+        status: afterUrl ? 'Closed' : 'Open',
+        before_photo_path: beforePath,
+      })
+    });
+
+    showToast(t('reportSuccess'));
+    state.form = {
+      project: '', reportedBy: '', date: new Date().toISOString().split('T')[0],
+      violationType: '', othersDetail: '', severity: '', location: '',
+      description: '', actionTaken: '', status: 'Open',
+      beforePhoto: null, afterPhoto: null, beforePreview: null, afterPreview: null
+    };
+    state.tab = 'violations';
+    await loadViolations();
+  } catch(e) {
+    console.error(e);
+    showToast(t('reportError'));
+  }
+  state.submitLoading = false; render();
+}
+
+async function updateViolationStatus(id, newStatus) {
+  try {
+    await supaFetch(`violations?id=eq.${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status: newStatus })
+    });
+    await loadViolations();
+    state.selectedViolation = state.violations.find(v => v.id === id);
+    render();
+  } catch(e) { showToast('❌ Update failed'); }
+}
+
+async function uploadAfterPhotoToViolation(violation, file) {
+  state.loading = true; render();
+  try {
+    const ts = Date.now();
+    const afterPath = `${violation.project}/after/${ts}_after.jpg`;
+    const afterUrl = await uploadPhoto(file, afterPath);
+    await supaFetch(`violations?id=eq.${violation.id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ after_photo_url: afterUrl, after_photo_path: afterPath, status: 'Closed' })
+    });
+    showToast('✅ After photo uploaded!');
+    await loadViolations();
+    state.selectedViolation = state.violations.find(v => v.id === violation.id);
+  } catch(e) { showToast('❌ Upload failed'); }
+  state.loading = false; render();
+}
+
+async function deleteAfterPhoto(violation) {
+  if (state.adminPw !== ADMIN_PASSWORD) { showToast('❌ Wrong admin password'); return; }
+  state.loading = true; render();
+  try {
+    if (violation.after_photo_path) await deletePhoto(violation.after_photo_path);
+    await supaFetch(`violations?id=eq.${violation.id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ after_photo_url: null, after_photo_path: null, status: 'Open' })
+    });
+    showToast('✅ Photo deleted');
+    state.deleteConfirm = false;
+    state.adminPw = '';
+    await loadViolations();
+    state.selectedViolation = state.violations.find(v => v.id === violation.id);
+  } catch(e) { showToast('❌ Delete failed'); }
+  state.loading = false; render();
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(msg) {
+  state.toast = msg;
+  render();
+  setTimeout(() => { state.toast = null; render(); }, 3000);
+}
+
+// ============================================================
+// PHOTO HANDLING
+// ============================================================
+function handlePhotoSelect(field, file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    state.form[field] = file;
+    state.form[field.replace('Photo', 'Preview')] = e.target.result;
+    render();
+  };
+  reader.readAsDataURL(file);
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function render() {
+  const app = document.getElementById('app');
+  if (!state.loggedIn) { app.innerHTML = renderLogin(); return; }
+  if (state.selectedViolation) { app.innerHTML = renderDetail(); attachDetailEvents(); return; }
+  app.innerHTML = `
+    ${renderHeader()}
+    ${renderNav()}
+    <div class="content">
+      ${state.tab === 'dashboard' ? renderDashboard() : ''}
+      ${state.tab === 'report' ? renderReportForm() : ''}
+      ${state.tab === 'violations' ? renderViolationsList() : ''}
+      ${state.tab === 'projects' ? renderProjects() : ''}
+    </div>
+    ${state.toast ? `<div class="toast">${state.toast}</div>` : ''}
+  `;
+  attachEvents();
+}
+
+function renderHeader() {
+  return `
+    <div class="header">
+      <div class="header-top">
+        <div>
+          <h1>🦺 ${t('appTitle')}</h1>
+          <p>${t('appSub')}</p>
+        </div>
+        <button class="lang-btn" onclick="toggleLang()">${state.lang === 'en' ? '中文' : 'EN'}</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderNav() {
+  const tabs = [
+    { id: 'dashboard', icon: '📊', label: t('dashboard') },
+    { id: 'report', icon: '➕', label: t('report') },
+    { id: 'violations', icon: '⚠️', label: t('violations') },
+    { id: 'projects', icon: '🏗️', label: t('projects') },
+  ];
+  return `
+    <div class="nav">
+      ${tabs.map(tab => `
+        <button class="nav-btn ${state.tab === tab.id ? 'active' : ''}" onclick="setTab('${tab.id}')">
+          <span class="icon">${tab.icon}</span>
+          <span>${tab.label}</span>
+        </button>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderLogin() {
+  return `
+    <div class="login-screen">
+      <div class="login-logo">🦺</div>
+      <div class="login-title">${t('appTitle')}</div>
+      <div class="login-sub">${t('appSub')}</div>
+      <div class="login-card">
+        <label>${t('password')}</label>
+        <input type="password" id="pw-input" placeholder="${t('enterPassword')}" style="margin-bottom:16px" />
+        <button class="btn btn-primary" onclick="doLogin()">${t('login')}</button>
+        <div id="pw-error" style="color:#E53935;font-size:13px;margin-top:8px;text-align:center"></div>
+        <div style="margin-top:16px;text-align:center">
+          <button class="lang-btn" style="background:#F5F5F5;border:1px solid #E0E0E0;color:#757575" onclick="toggleLang()">${state.lang === 'en' ? '中文' : 'EN'}</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderDashboard() {
+  const total = state.violations.length;
+  const open = state.violations.filter(v => v.status === 'Open').length;
+  const closed = state.violations.filter(v => v.status === 'Closed').length;
+  const inProgress = state.violations.filter(v => v.status === 'In Progress').length;
+
+  // Per project stats
+  const projectStats = state.projects.map(p => {
+    const pvs = state.violations.filter(v => v.project === p);
+    const pclosed = pvs.filter(v => v.status === 'Closed').length;
+    return { name: p, total: pvs.length, closed: pclosed };
+  }).filter(p => p.total > 0);
+
+  return `
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-num" style="color:var(--text)">${total}</div>
+        <div class="stat-label">${t('totalViolations')}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" style="color:var(--warning)">${open + inProgress}</div>
+        <div class="stat-label">${t('openViolations')}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" style="color:var(--success)">${closed}</div>
+        <div class="stat-label">${t('closedViolations')}</div>
+      </div>
+    </div>
+
+    ${projectStats.length > 0 ? `
+      <div class="card">
+        <div class="card-title">🏗️ ${t('projects')} ${t('progress')}</div>
+        ${projectStats.map(p => `
+          <div style="margin-bottom:12px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+              <span style="font-size:13px;font-weight:600">${p.name}</span>
+              <span style="font-size:12px;color:var(--text2)">${p.closed}/${p.total} ${t('cleared')}</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:${p.total ? (p.closed/p.total*100) : 0}%"></div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    ` : ''}
+
+    <div class="card">
+      <div class="card-title">⚠️ Recent Violations</div>
+      ${state.violations.slice(0,5).map(v => `
+        <div class="violation-item ${v.status === 'Closed' ? 'closed' : v.status === 'In Progress' ? 'in-progress' : 'open'}" onclick="selectViolation(${v.id})">
+          <div class="violation-header">
+            <div class="violation-title">${v.project} — ${v.violation_type}</div>
+            ${severityBadge(v.severity)}
+          </div>
+          <div class="violation-meta">
+            <span>📅 ${v.date}</span>
+            <span>👤 ${v.reported_by}</span>
+          </div>
+          ${statusBadge(v.status)}
+        </div>
+      `).join('') || `<div class="empty-state"><div class="icon">✅</div><p>No violations yet</p></div>`}
+    </div>
+  `;
+}
+
+function renderReportForm() {
+  const f = state.form;
+  const types = state.lang === 'zh' ? VIOLATION_TYPES_ZH : VIOLATION_TYPES;
+  return `
+    <div class="card">
+      <div class="card-title">📋 New Violation Report</div>
+
+      <label>${t('projectName')} *</label>
+      <select id="f-project">
+        <option value="">${t('selectProject')}</option>
+        ${state.projects.map(p => `<option value="${p}" ${f.project===p?'selected':''}>${p}</option>`).join('')}
+      </select>
+
+      <label>${t('reportedBy')} *</label>
+      <input type="text" id="f-reportedBy" value="${f.reportedBy}" placeholder="Your name" />
+
+      <label>${t('date')} *</label>
+      <input type="date" id="f-date" value="${f.date}" />
+
+      <label>${t('violationType')} *</label>
+      <select id="f-violationType">
+        <option value="">${t('selectType')}</option>
+        ${VIOLATION_TYPES.map((type, i) => `<option value="${type}" ${f.violationType===type?'selected':''}>${state.lang==='zh'?VIOLATION_TYPES_ZH[i]:type}</option>`).join('')}
+      </select>
+
+      ${f.violationType === 'Others' ? `
+        <label>${t('othersDetail')} *</label>
+        <input type="text" id="f-othersDetail" value="${f.othersDetail}" placeholder="Describe the violation" />
+      ` : ''}
+
+      <label>${t('severity')} *</label>
+      <select id="f-severity">
+        <option value="">${t('selectSeverity')}</option>
+        <option value="Low" ${f.severity==='Low'?'selected':''}>${t('low')}</option>
+        <option value="Medium" ${f.severity==='Medium'?'selected':''}>${t('medium')}</option>
+        <option value="High" ${f.severity==='High'?'selected':''}>${t('high')}</option>
+        <option value="Critical" ${f.severity==='Critical'?'selected':''}>${t('critical')}</option>
+      </select>
+
+      <label>${t('locationOnSite')} *</label>
+      <input type="text" id="f-location" value="${f.location}" placeholder="e.g. Level 3, Grid B" />
+
+      <label>${t('description')}</label>
+      <textarea id="f-description" placeholder="Additional notes...">${f.description}</textarea>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📷 ${t('beforePhoto')} *</div>
+      <div class="photo-area ${f.beforePreview ? 'has-photo' : ''}">
+        ${f.beforePreview ? `<img src="${f.beforePreview}" class="photo-preview" />` : `<div class="photo-label">📷 ${t('noPhoto')}</div>`}
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-outline btn-sm" onclick="document.getElementById('before-cam').click()">📷 ${t('takePhoto')}</button>
+        <button class="btn btn-outline btn-sm" onclick="document.getElementById('before-file').click()">📁 ${t('uploadPhoto')}</button>
+      </div>
+      <input type="file" id="before-cam" accept="image/*" capture="environment" onchange="handlePhoto('before', this)" />
+      <input type="file" id="before-file" accept="image/*" onchange="handlePhoto('before', this)" />
+    </div>
+
+    <div class="card">
+      <div class="card-title">📷 ${t('afterPhoto')} <span style="font-size:11px;color:var(--text2)">(Optional — upload now or later)</span></div>
+      <div class="photo-area ${f.afterPreview ? 'has-photo' : ''}">
+        ${f.afterPreview ? `<img src="${f.afterPreview}" class="photo-preview" />` : `<div class="photo-label">📷 ${t('noPhoto')}</div>`}
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-outline btn-sm" onclick="document.getElementById('after-cam').click()">📷 ${t('takePhoto')}</button>
+        <button class="btn btn-outline btn-sm" onclick="document.getElementById('after-file').click()">📁 ${t('uploadPhoto')}</button>
+      </div>
+      <input type="file" id="after-cam" accept="image/*" capture="environment" onchange="handlePhoto('after', this)" />
+      <input type="file" id="after-file" accept="image/*" onchange="handlePhoto('after', this)" />
+    </div>
+
+    <button class="btn btn-primary" onclick="submitReport()" ${state.submitLoading ? 'disabled' : ''}>
+      ${state.submitLoading ? `<span class="spinner" style="width:18px;height:18px;border-width:2px"></span> ${t('submitting')}` : t('submit')}
+    </button>
+  `;
+}
+
+function renderViolationsList() {
+  const filtered = state.violations.filter(v => {
+    if (state.filter === 'all') return true;
+    if (state.filter === 'open') return v.status === 'Open';
+    if (state.filter === 'progress') return v.status === 'In Progress';
+    if (state.filter === 'closed') return v.status === 'Closed';
+    return true;
+  });
+
+  return `
+    <div class="filter-row">
+      <button class="filter-chip ${state.filter==='all'?'active':''}" onclick="setFilter('all')">${t('filterAll')} (${state.violations.length})</button>
+      <button class="filter-chip ${state.filter==='open'?'active':''}" onclick="setFilter('open')">${t('filterOpen')} (${state.violations.filter(v=>v.status==='Open').length})</button>
+      <button class="filter-chip ${state.filter==='progress'?'active':''}" onclick="setFilter('progress')">${t('filterProgress')} (${state.violations.filter(v=>v.status==='In Progress').length})</button>
+      <button class="filter-chip ${state.filter==='closed'?'active':''}" onclick="setFilter('closed')">${t('filterClosed')} (${state.violations.filter(v=>v.status==='Closed').length})</button>
+    </div>
+
+    ${state.loading ? `<div class="loading"><div class="spinner"></div><span>Loading...</span></div>` : ''}
+
+    ${!state.loading && filtered.length === 0 ? `
+      <div class="empty-state">
+        <div class="icon">✅</div>
+        <p>${t('noViolations')}</p>
+      </div>
+    ` : ''}
+
+    ${filtered.map(v => `
+      <div class="violation-item ${v.status === 'Closed' ? 'closed' : v.status === 'In Progress' ? 'in-progress' : 'open'}" onclick="selectViolation(${v.id})">
+        <div class="violation-header">
+          <div class="violation-title">${v.project} — ${v.violation_type}</div>
+          ${severityBadge(v.severity)}
+        </div>
+        <div class="violation-meta">
+          <span>📅 ${v.date}</span>
+          <span>👤 ${v.reported_by}</span>
+          <span>📍 ${v.location}</span>
+        </div>
+        <div style="margin-top:6px">${statusBadge(v.status)}</div>
+        <div style="margin-top:6px;font-size:11px;color:var(--text2)">
+          ${v.before_photo_url ? '📷 Before' : ''}
+          ${v.after_photo_url ? ' ✅ After' : ''}
+        </div>
+      </div>
+    `).join('')}
+  `;
+}
+
+function renderProjects() {
+  return `
+    <div class="card">
+      <div class="card-title">🏗️ ${t('projects')}</div>
+      ${state.projects.map(p => {
+        const pvs = state.violations.filter(v => v.project === p);
+        const closed = pvs.filter(v => v.status === 'Closed').length;
+        return `
+          <div class="info-row">
+            <span class="info-label">${p}</span>
+            <span class="info-value">${pvs.length} violations / ${closed} closed</span>
+          </div>
+        `;
+      }).join('')}
+
+      ${state.showAddProject ? `
+        <div style="margin-top:12px">
+          <input type="text" id="new-project-input" value="${state.newProjectName}" placeholder="${t('newProjectName')}" style="margin-bottom:8px" />
+          <div class="btn-row">
+            <button class="btn btn-primary btn-sm" onclick="addProject()">${t('add')}</button>
+            <button class="btn btn-outline btn-sm" onclick="state.showAddProject=false;render()">${t('cancel')}</button>
+          </div>
+        </div>
+      ` : `
+        <button class="btn btn-outline" style="margin-top:12px" onclick="state.showAddProject=true;render()">${t('addProject')}</button>
+      `}
+    </div>
+  `;
+}
+
+function renderDetail() {
+  const v = state.selectedViolation;
+  if (!v) return '';
+  return `
+    ${renderHeader()}
+    <div class="content">
+      <div class="detail-header">
+        <button class="back-btn" onclick="state.selectedViolation=null;render()">${t('back')}</button>
+        <div>
+          <div style="font-size:16px;font-weight:700">${v.project} — ${v.violation_type}</div>
+          <div style="font-size:12px;color:var(--text2)">${v.date} · ${v.reported_by}</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+          ${statusBadge(v.status)}
+          ${severityBadge(v.severity)}
+        </div>
+        <div class="info-row"><span class="info-label">${t('projectName')}</span><span class="info-value">${v.project}</span></div>
+        <div class="info-row"><span class="info-label">${t('reportedBy')}</span><span class="info-value">${v.reported_by}</span></div>
+        <div class="info-row"><span class="info-label">${t('date')}</span><span class="info-value">${v.date}</span></div>
+        <div class="info-row"><span class="info-label">${t('violationType')}</span><span class="info-value">${v.violation_type}</span></div>
+        <div class="info-row"><span class="info-label">${t('locationOnSite')}</span><span class="info-value">${v.location}</span></div>
+        ${v.description ? `<div class="info-row"><span class="info-label">${t('description')}</span><span class="info-value">${v.description}</span></div>` : ''}
+        ${v.action_taken ? `<div class="info-row"><span class="info-label">${t('actionTaken')}</span><span class="info-value">${v.action_taken}</span></div>` : ''}
+      </div>
+
+      <div class="card">
+        <div class="card-title">📷 Photos</div>
+        <div class="photos-grid">
+          <div>
+            <div style="font-size:11px;font-weight:700;margin-bottom:4px;color:var(--text2)">BEFORE</div>
+            ${v.before_photo_url ? `<img src="${v.before_photo_url}" style="width:100%;border-radius:8px;aspect-ratio:1;object-fit:cover" />` : `<div style="background:#EEE;border-radius:8px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:24px">📷</div>`}
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;margin-bottom:4px;color:var(--text2)">AFTER</div>
+            ${v.after_photo_url ? `<img src="${v.after_photo_url}" style="width:100%;border-radius:8px;aspect-ratio:1;object-fit:cover" />` : `<div style="background:#EEE;border-radius:8px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:24px">📷</div>`}
+          </div>
+        </div>
+
+        ${!v.after_photo_url ? `
+          <div style="margin-top:8px">
+            <div style="font-size:12px;color:var(--text2);margin-bottom:8px">Upload After Photo:</div>
+            <div class="btn-row">
+              <button class="btn btn-outline btn-sm" onclick="document.getElementById('detail-after-cam').click()">📷 ${t('takePhoto')}</button>
+              <button class="btn btn-outline btn-sm" onclick="document.getElementById('detail-after-file').click()">📁 ${t('uploadPhoto')}</button>
+            </div>
+            <input type="file" id="detail-after-cam" accept="image/*" capture="environment" onchange="handleDetailAfterPhoto(this)" />
+            <input type="file" id="detail-after-file" accept="image/*" onchange="handleDetailAfterPhoto(this)" />
+          </div>
+        ` : `
+          <div class="admin-section">
+            <div style="font-size:12px;font-weight:700;margin-bottom:8px">${t('adminSection')}</div>
+            ${!state.deleteConfirm ? `
+              <button class="btn btn-danger btn-sm" onclick="state.deleteConfirm=true;render()">${t('deletePhoto')}</button>
+            ` : `
+              <label>${t('adminPassword')}</label>
+              <input type="password" id="admin-pw" placeholder="Admin password" style="margin-bottom:8px" value="${state.adminPw}" />
+              <div class="btn-row">
+                <button class="btn btn-danger btn-sm" onclick="doDeleteAfterPhoto()">${t('confirmDelete')}</button>
+                <button class="btn btn-outline btn-sm" onclick="state.deleteConfirm=false;state.adminPw='';render()">${t('cancel')}</button>
+              </div>
+            `}
+          </div>
+        `}
+      </div>
+
+      <div class="card">
+        <div class="card-title">🔄 ${t('updateStatus')}</div>
+        <div class="btn-row" style="flex-wrap:wrap">
+          <button class="btn btn-sm ${v.status==='Open'?'btn-primary':'btn-outline'}" onclick="updateViolationStatus(${v.id},'Open')">${t('open')}</button>
+          <button class="btn btn-sm ${v.status==='In Progress'?'btn-primary':'btn-outline'}" onclick="updateViolationStatus(${v.id},'In Progress')">${t('inProgress')}</button>
+          <button class="btn btn-success btn-sm" onclick="updateViolationStatus(${v.id},'Closed')">${t('closed')}</button>
+        </div>
+      </div>
+    </div>
+    ${state.toast ? `<div class="toast">${state.toast}</div>` : ''}
+  `;
+}
+
+// ============================================================
+// BADGES
+// ============================================================
+function statusBadge(status) {
+  const map = { 'Open': 'badge-open', 'In Progress': 'badge-progress', 'Closed': 'badge-closed' };
+  const labels = { 'Open': t('open'), 'In Progress': t('inProgress'), 'Closed': t('closed') };
+  return `<span class="badge ${map[status] || 'badge-open'}">${labels[status] || status}</span>`;
+}
+function severityBadge(sev) {
+  const map = { 'Low': 'badge-low', 'Medium': 'badge-medium', 'High': 'badge-high', 'Critical': 'badge-critical' };
+  const labels = { 'Low': t('low'), 'Medium': t('medium'), 'High': t('high'), 'Critical': t('critical') };
+  return `<span class="badge ${map[sev] || 'badge-medium'}">${labels[sev] || sev}</span>`;
+}
+
+// ============================================================
+// EVENT HANDLERS
+// ============================================================
+function attachEvents() {
+  // Form field sync
+  const fields = ['project','reportedBy','date','violationType','othersDetail','severity','location','description'];
+  fields.forEach(field => {
+    const el = document.getElementById(`f-${field}`);
+    if (el) el.addEventListener('change', () => { state.form[field] = el.value; render(); });
+  });
+  // New project input
+  const np = document.getElementById('new-project-input');
+  if (np) np.addEventListener('input', () => { state.newProjectName = np.value; });
+}
+
+function attachDetailEvents() {
+  const pw = document.getElementById('admin-pw');
+  if (pw) pw.addEventListener('input', () => { state.adminPw = pw.value; });
+}
+
+function handlePhoto(type, input) {
+  if (input.files[0]) handlePhotoSelect(type + 'Photo', input.files[0]);
+}
+
+function handleDetailAfterPhoto(input) {
+  if (input.files[0]) uploadAfterPhotoToViolation(state.selectedViolation, input.files[0]);
+}
+
+function doDeleteAfterPhoto() {
+  state.adminPw = document.getElementById('admin-pw')?.value || state.adminPw;
+  deleteAfterPhoto(state.selectedViolation);
+}
+
+function doLogin() {
+  const pw = document.getElementById('pw-input').value;
+  if (pw === APP_PASSWORD) {
+    state.loggedIn = true;
+    render();
+    loadViolations();
+  } else {
+    document.getElementById('pw-error').textContent = t('wrongPassword');
+  }
+}
+
+function toggleLang() {
+  state.lang = state.lang === 'en' ? 'zh' : 'en';
+  render();
+}
+
+function setTab(tab) {
+  state.tab = tab;
+  if (tab === 'violations' || tab === 'dashboard') loadViolations();
+  else render();
+}
+
+function setFilter(f) { state.filter = f; render(); }
+
+function selectViolation(id) {
+  state.selectedViolation = state.violations.find(v => v.id === id);
+  render();
+}
+
+function addProject() {
+  const name = document.getElementById('new-project-input')?.value || state.newProjectName;
+  if (name.trim()) {
+    state.projects.push(name.trim());
+    state.newProjectName = '';
+    state.showAddProject = false;
+    render();
+  }
+}
+
+// ============================================================
+// INIT
+// ============================================================
+render();
+</script>
+</body>
+</html>
