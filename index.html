@@ -23,9 +23,10 @@
     .header p { font-size: 12px; opacity: 0.85; }
     .lang-btn { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; cursor: pointer; }
     .nav { display: flex; background: white; border-bottom: 1px solid var(--border); position: sticky; top: 65px; z-index: 99; }
-    .nav-btn { flex: 1; padding: 12px 4px; border: none; background: none; font-size: 11px; color: var(--text2); cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+    .nav-btn { flex: 1; padding: 10px 4px 8px; border: none; background: none; font-size: 11px; color: var(--text2); cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 2px; position: relative; }
     .nav-btn .icon { font-size: 18px; }
     .nav-btn.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
+    .nav-badge { position: absolute; top: 6px; right: 18%; background: var(--danger); color: white; border-radius: 10px; font-size: 9px; font-weight: 800; padding: 1px 5px; min-width: 16px; text-align: center; }
     .content { padding: 16px; padding-bottom: 32px; }
     .card { background: var(--card); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
     .card-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
@@ -64,36 +65,65 @@
     .violation-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
     .violation-title { font-size: 14px; font-weight: 700; flex: 1; }
     .violation-meta { font-size: 12px; color: var(--text2); margin-top: 4px; }
+    /* Project cards grid - 3 per row */
+    .project-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+    .project-card { background: white; border-radius: 10px; padding: 10px 8px; text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,0.08); cursor: pointer; border: 2px solid transparent; position: relative; transition: all 0.2s; }
+    .project-card:active { transform: scale(0.96); }
+    .project-card.has-open { border-color: var(--warning); }
+    .project-card.all-closed { border-color: var(--success); }
+    .project-card-name { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .project-card-count { font-size: 18px; font-weight: 800; color: var(--primary); }
+    .project-card-label { font-size: 10px; color: var(--text2); margin-top: 2px; }
+    .project-card-new { position: absolute; top: -6px; right: -6px; background: var(--danger); color: white; border-radius: 10px; font-size: 9px; font-weight: 800; padding: 2px 5px; min-width: 18px; text-align: center; }
+    /* Stats row */
     .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
     .stat-card { background: white; border-radius: 10px; padding: 12px 8px; text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
     .stat-num { font-size: 22px; font-weight: 800; }
     .stat-label { font-size: 10px; color: var(--text2); margin-top: 2px; }
+    /* New violation alert banner */
+    .alert-banner { background: #FFEBEE; border-left: 4px solid var(--danger); border-radius: 8px; padding: 12px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+    .alert-banner-text { font-size: 13px; font-weight: 600; color: var(--danger); flex: 1; }
+    .alert-banner-count { background: var(--danger); color: white; border-radius: 20px; font-size: 12px; font-weight: 800; padding: 3px 10px; }
+    /* Login */
     .login-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 24px; background: linear-gradient(135deg, #FF6B35 0%, #E53935 100%); }
     .login-logo { font-size: 56px; margin-bottom: 16px; }
     .login-title { font-size: 24px; font-weight: 800; color: white; margin-bottom: 4px; text-align: center; }
     .login-sub { font-size: 14px; color: rgba(255,255,255,0.8); margin-bottom: 32px; text-align: center; }
     .login-card { background: white; border-radius: 16px; padding: 24px; width: 100%; max-width: 360px; }
-    .progress-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-top: 6px; }
-    .progress-fill { height: 100%; background: var(--success); border-radius: 3px; }
+    /* Filter */
     .filter-row { display: flex; gap: 8px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 4px; }
     .filter-chip { padding: 6px 14px; border-radius: 20px; border: 1.5px solid var(--border); background: white; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; color: var(--text2); }
     .filter-chip.active { background: var(--primary); color: white; border-color: var(--primary); }
+    /* Info rows */
     .info-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #F5F5F5; }
     .info-label { font-size: 12px; color: var(--text2); }
     .info-value { font-size: 13px; font-weight: 600; text-align: right; max-width: 60%; }
+    /* Detail */
     .back-btn { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--primary); padding: 4px 8px 4px 0; }
     .detail-header { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+    /* Toast */
     .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #212121; color: white; padding: 12px 20px; border-radius: 24px; font-size: 13px; z-index: 999; white-space: nowrap; }
+    /* Loading */
     .loading { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px; color: var(--text2); gap: 12px; }
     .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .empty-state { text-align: center; padding: 48px 16px; color: var(--text2); }
     .empty-icon { font-size: 48px; margin-bottom: 12px; }
+    /* Modal */
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 200; display: flex; align-items: flex-end; }
     .modal { background: white; border-radius: 16px 16px 0 0; padding: 24px; width: 100%; max-height: 80vh; overflow-y: auto; }
     .modal-title { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
     .divider { border: none; border-top: 1px solid var(--border); margin: 12px 0; }
     .danger-box { background: #FFEBEE; border-radius: 8px; padding: 12px; margin-bottom: 8px; }
+    /* Project list item in Projects tab */
+    .project-list-item { background: white; border-radius: 10px; padding: 14px; margin-bottom: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: space-between; }
+    .project-list-name { font-size: 14px; font-weight: 700; }
+    .project-list-count { font-size: 12px; color: var(--text2); margin-top: 2px; }
+    .project-list-actions { display: flex; gap: 6px; }
+    /* Project view header */
+    .project-view-header { background: var(--primary); color: white; padding: 12px 16px; border-radius: 10px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+    .project-view-title { font-size: 16px; font-weight: 700; }
+    .project-view-stats { font-size: 12px; opacity: 0.9; }
   </style>
 </head>
 <body>
@@ -106,8 +136,8 @@ const ADMIN_PASSWORD = 'admin1234';
 const BUCKET = 'safety-violations';
 
 const T = {
-  en: { appTitle:'Safety Violation Tracker', appSub:'Construction Safety Management', login:'Login', enterPassword:'Enter Password', password:'Password', wrongPassword:'Incorrect password', dashboard:'Dashboard', report:'Report', violations:'Violations', projects:'Projects', totalViolations:'Total', openViolations:'Open', closedViolations:'Closed', projectName:'Project', reportedBy:'Reported By', date:'Date', violationType:'Violation Type', severity:'Severity', locationOnSite:'Location on Site', description:'Description (Optional)', actionTaken:'Action Taken', beforePhoto:'Before Photo', afterPhoto:'After Photo', status:'Status', submit:'Submit Report', submitting:'Submitting...', takePhoto:'📷 Camera', uploadPhoto:'📁 Upload', noPhoto:'No photo yet', filterAll:'All', filterOpen:'Open', filterProgress:'In Progress', filterClosed:'Closed', back:'← Back', updateStatus:'Update Status', deletePhoto:'🗑 Delete After Photo', confirmDelete:'Confirm Delete', adminPassword:'Admin Password', noViolations:'No violations found', addProject:'+ Add Project', newProjectName:'New Project Name', add:'Add', cancel:'Cancel', reportSuccess:'✅ Report submitted!', reportError:'❌ Error submitting.', selectProject:'Select Project', selectType:'Select Violation Type', selectSeverity:'Select Severity', othersDetail:'Specify Violation', low:'Low', medium:'Medium', high:'High', critical:'Critical', open:'Open', inProgress:'In Progress', closed:'Closed', cleared:'cleared', adminSection:'Admin Actions', editViolation:'✏️ Edit Violation', deleteViolation:'🗑 Delete Violation', deleteViolationConfirm:'Delete this violation and all photos?', downloadPDF:'📄 Download PDF Report', generating:'Generating...', saveChanges:'Save Changes', saving:'Saving...', editSuccess:'✅ Saved!', deleteSuccess:'✅ Deleted!', selectStatus:'Select Status' },
-  zh: { appTitle:'安全违规追踪系统', appSub:'建筑安全管理', login:'登录', enterPassword:'请输入密码', password:'密码', wrongPassword:'密码错误', dashboard:'仪表板', report:'举报', violations:'违规记录', projects:'项目', totalViolations:'总计', openViolations:'未解决', closedViolations:'已解决', projectName:'项目', reportedBy:'报告人', date:'日期', violationType:'违规类型', severity:'严重程度', locationOnSite:'现场位置', description:'描述（可选）', actionTaken:'已采取措施', beforePhoto:'事前照片', afterPhoto:'事后照片', status:'状态', submit:'提交报告', submitting:'提交中...', takePhoto:'📷 拍照', uploadPhoto:'📁 上传', noPhoto:'暂无照片', filterAll:'全部', filterOpen:'未解决', filterProgress:'处理中', filterClosed:'已解决', back:'← 返回', updateStatus:'更新状态', deletePhoto:'🗑 删除照片', confirmDelete:'确认删除', adminPassword:'管理员密码', noViolations:'暂无记录', addProject:'+ 添加项目', newProjectName:'新项目名称', add:'添加', cancel:'取消', reportSuccess:'✅ 已提交！', reportError:'❌ 提交失败', selectProject:'选择项目', selectType:'选择违规类型', selectSeverity:'选择严重程度', othersDetail:'说明违规类型', low:'低', medium:'中', high:'高', critical:'严重', open:'未解决', inProgress:'处理中', closed:'已解决', cleared:'已清除', adminSection:'管理员操作', editViolation:'✏️ 编辑', deleteViolation:'🗑 删除违规', deleteViolationConfirm:'删除此违规及所有照片？', downloadPDF:'📄 下载PDF报告', generating:'生成中...', saveChanges:'保存', saving:'保存中...', editSuccess:'✅ 已保存！', deleteSuccess:'✅ 已删除！', selectStatus:'选择状态' }
+  en: { appTitle:'Safety Violation Tracker', appSub:'Construction Safety Management', login:'Login', enterPassword:'Enter Password', password:'Password', wrongPassword:'Incorrect password', dashboard:'Dashboard', report:'Report', violations:'Violations', projects:'Projects', totalViolations:'Total', openViolations:'Open', closedViolations:'Closed', projectName:'Project', reportedBy:'Reported By', date:'Date', violationType:'Violation Type', severity:'Severity', locationOnSite:'Location on Site', description:'Description (Optional)', actionTaken:'Action Taken', beforePhoto:'Before Photo', afterPhoto:'After Photo', status:'Status', submit:'Submit Report', submitting:'Submitting...', takePhoto:'📷 Camera', uploadPhoto:'📁 Upload', noPhoto:'No photo yet', filterAll:'All', filterOpen:'Open', filterProgress:'In Progress', filterClosed:'Closed', back:'← Back', updateStatus:'Update Status', deletePhoto:'🗑 Delete After Photo', confirmDelete:'Confirm Delete', adminPassword:'Admin Password', noViolations:'No violations found', addProject:'+ Add Project', newProjectName:'New Project Name', add:'Add', cancel:'Cancel', reportSuccess:'✅ Report submitted!', reportError:'❌ Error submitting.', selectProject:'Select Project', selectType:'Select Violation Type', selectSeverity:'Select Severity', othersDetail:'Specify Violation', low:'Low', medium:'Medium', high:'High', critical:'Critical', open:'Open', inProgress:'In Progress', closed:'Closed', cleared:'cleared', adminSection:'Admin Actions', editViolation:'✏️ Edit Violation', deleteViolation:'🗑 Delete Violation', deleteViolationConfirm:'Delete this violation and all photos?', downloadPDF:'📄 Download PDF', generating:'Generating...', saveChanges:'Save Changes', saving:'Saving...', editSuccess:'✅ Saved!', deleteSuccess:'✅ Deleted!', selectStatus:'Select Status', newViolationAlert:'New violations detected!', editProject:'Edit Project', deleteProject:'Delete Project', deleteProjectConfirm:'Delete this project? Violations will NOT be deleted.', projectUpdated:'✅ Project updated!', projectDeleted:'✅ Project deleted!', viewViolations:'View Violations', allProjects:'All Projects' },
+  zh: { appTitle:'安全违规追踪系统', appSub:'建筑安全管理', login:'登录', enterPassword:'请输入密码', password:'密码', wrongPassword:'密码错误', dashboard:'仪表板', report:'举报', violations:'违规记录', projects:'项目', totalViolations:'总计', openViolations:'未解决', closedViolations:'已解决', projectName:'项目', reportedBy:'报告人', date:'日期', violationType:'违规类型', severity:'严重程度', locationOnSite:'现场位置', description:'描述（可选）', actionTaken:'已采取措施', beforePhoto:'事前照片', afterPhoto:'事后照片', status:'状态', submit:'提交报告', submitting:'提交中...', takePhoto:'📷 拍照', uploadPhoto:'📁 上传', noPhoto:'暂无照片', filterAll:'全部', filterOpen:'未解决', filterProgress:'处理中', filterClosed:'已解决', back:'← 返回', updateStatus:'更新状态', deletePhoto:'🗑 删除照片', confirmDelete:'确认删除', adminPassword:'管理员密码', noViolations:'暂无记录', addProject:'+ 添加项目', newProjectName:'新项目名称', add:'添加', cancel:'取消', reportSuccess:'✅ 已提交！', reportError:'❌ 提交失败', selectProject:'选择项目', selectType:'选择违规类型', selectSeverity:'选择严重程度', othersDetail:'说明违规类型', low:'低', medium:'中', high:'高', critical:'严重', open:'未解决', inProgress:'处理中', closed:'已解决', cleared:'已清除', adminSection:'管理员操作', editViolation:'✏️ 编辑', deleteViolation:'🗑 删除违规', deleteViolationConfirm:'删除此违规及所有照片？', downloadPDF:'📄 下载PDF', generating:'生成中...', saveChanges:'保存', saving:'保存中...', editSuccess:'✅ 已保存！', deleteSuccess:'✅ 已删除！', selectStatus:'选择状态', newViolationAlert:'检测到新违规！', editProject:'编辑项目', deleteProject:'删除项目', deleteProjectConfirm:'删除此项目？违规记录不会被删除。', projectUpdated:'✅ 项目已更新！', projectDeleted:'✅ 项目已删除！', viewViolations:'查看违规', allProjects:'所有项目' }
 };
 
 const VIOLATION_TYPES = ['PPE Not Worn','Working at Height','Scaffolding Unsafe','Electrical Hazard','Fire Hazard','Housekeeping','Machinery Unsafe','No Signage','Excavation Unsafe','Chemical Hazard','Blocked Emergency Exit','Overloaded Platform','Others'];
@@ -115,15 +145,34 @@ const VIOLATION_TYPES_ZH = ['未佩戴PPE','高处作业','脚手架不安全','
 
 let state = {
   lang:'en', loggedIn:false, tab:'dashboard', violations:[], projects:['P202','P209','P210','P211','P212','P213','P216'],
-  loading:false, selectedViolation:null, filter:'all',
+  loading:false, selectedViolation:null, filter:'all', projectFilter:null,
   form:{ project:'',reportedBy:'',date:new Date().toISOString().split('T')[0],violationType:'',othersDetail:'',severity:'',location:'',description:'',actionTaken:'',beforePhoto:null,afterPhoto:null,beforePreview:null,afterPreview:null },
   toast:null, showAddProject:false, newProjectName:'', adminPw:'',
   deleteConfirm:false, deleteViolationConfirm:false,
   submitLoading:false, editMode:false, editForm:{}, savingEdit:false,
   showPDFModal:false, pdfProject:'all', pdfGenerating:false,
+  // Project management
+  editingProject:null, editingProjectName:'', deleteProjectConfirm:false, deleteProjectName:'',
+  // Notifications
+  lastSeenCount: parseInt(localStorage.getItem('lastSeenCount')||'0'),
+  lastSeenTime: parseInt(localStorage.getItem('lastSeenTime')||'0'),
 };
 
 function t(k){ return T[state.lang][k]||k; }
+
+// New violations = violations added after last seen time
+function getNewViolations() {
+  return state.violations.filter(v => new Date(v.created_at).getTime() > state.lastSeenTime);
+}
+function getNewViolationsForProject(project) {
+  return state.violations.filter(v => v.project===project && new Date(v.created_at).getTime() > state.lastSeenTime);
+}
+function markAllSeen() {
+  state.lastSeenTime = Date.now();
+  state.lastSeenCount = state.violations.length;
+  localStorage.setItem('lastSeenTime', state.lastSeenTime);
+  localStorage.setItem('lastSeenCount', state.lastSeenCount);
+}
 
 async function supaFetch(path, options={}) {
   const headers = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
@@ -174,6 +223,10 @@ async function loadViolations() {
   try { state.violations = await supaFetch('violations?order=created_at.desc', {headers:{'Range':'0-499'}}); }
   catch(e) { console.error(e); state.violations=[]; }
   state.loading=false; render();
+  // Update app badge (Android)
+  const newCount = getNewViolations().length;
+  if ('setAppBadge' in navigator && newCount > 0) { navigator.setAppBadge(newCount).catch(()=>{}); }
+  else if ('setAppBadge' in navigator) { navigator.clearAppBadge().catch(()=>{}); }
 }
 
 async function submitReport() {
@@ -191,7 +244,8 @@ async function submitReport() {
     await supaFetch('violations', { method:'POST', body:JSON.stringify({ project:f.project, reported_by:f.reportedBy, date:f.date, violation_type:vtype, severity:f.severity, location:f.location, description:f.description, action_taken:f.actionTaken, before_photo_url:beforeUrl, after_photo_url:afterUrl, before_photo_path:beforePath, after_photo_path:afterPath, status:afterUrl?'Closed':'Open' }) });
     showToast(t('reportSuccess'));
     state.form={project:'',reportedBy:'',date:new Date().toISOString().split('T')[0],violationType:'',othersDetail:'',severity:'',location:'',description:'',actionTaken:'',beforePhoto:null,afterPhoto:null,beforePreview:null,afterPreview:null};
-    state.tab='violations'; await loadViolations();
+    state.tab='violations'; state.projectFilter=null;
+    await loadViolations();
   } catch(e) { console.error(e); showToast(t('reportError')); }
   state.submitLoading=false; render();
 }
@@ -255,6 +309,25 @@ async function deleteAfterPhoto(violation) {
   state.loading=false; render();
 }
 
+// Project management
+function saveEditProject() {
+  if (state.adminPw!==ADMIN_PASSWORD) { showToast('❌ Wrong admin password'); return; }
+  const name = state.editingProjectName.trim();
+  if (!name) { showToast('⚠️ Project name required'); return; }
+  const idx = state.projects.indexOf(state.editingProject);
+  if (idx !== -1) { state.projects[idx] = name; }
+  state.editingProject=null; state.editingProjectName=''; state.adminPw='';
+  showToast(t('projectUpdated')); render();
+}
+
+function confirmDeleteProject() {
+  if (state.adminPw!==ADMIN_PASSWORD) { showToast('❌ Wrong admin password'); return; }
+  state.projects = state.projects.filter(p=>p!==state.deleteProjectName);
+  state.deleteProjectConfirm=false; state.deleteProjectName=''; state.adminPw='';
+  showToast(t('projectDeleted')); render();
+}
+
+// PDF Generation
 function loadImageAsBase64(url) {
   return new Promise((resolve,reject) => {
     const img=new Image(); img.crossOrigin='Anonymous';
@@ -274,16 +347,14 @@ async function generatePDF() {
 
     function checkPage(need=20){ if(y+need>280){doc.addPage();y=margin;} }
 
-    // Header
     doc.setFillColor(255,107,53); doc.rect(0,0,210,28,'F');
     doc.setTextColor(255,255,255); doc.setFontSize(16); doc.setFont('helvetica','bold');
     doc.text('Safety Violation Report', margin, 12);
     doc.setFontSize(9); doc.setFont('helvetica','normal');
     const dateStr=new Date().toLocaleDateString('en-GB');
-    doc.text(`Generated: ${dateStr}  |  Project: ${state.pdfProject==='all'?'All Projects':state.pdfProject}  |  Total Records: ${filtered.length}`, margin, 21);
+    doc.text(`Generated: ${dateStr}  |  Project: ${state.pdfProject==='all'?'All Projects':state.pdfProject}  |  Total: ${filtered.length}`, margin, 21);
     y=36;
 
-    // Summary box
     const open=filtered.filter(v=>v.status==='Open').length;
     const closed=filtered.filter(v=>v.status==='Closed').length;
     const inProg=filtered.filter(v=>v.status==='In Progress').length;
@@ -296,12 +367,10 @@ async function generatePDF() {
     for (let i=0;i<filtered.length;i++) {
       const v=filtered[i];
       checkPage(70);
-      // Item header
       doc.setFillColor(255,240,230); doc.rect(margin,y,contentW,9,'F');
       doc.setTextColor(229,90,38); doc.setFontSize(11); doc.setFont('helvetica','bold');
       doc.text(`#${i+1}  ${v.project}  —  ${v.violation_type}`, margin+3, y+6.5);
       y+=12;
-      // Details
       doc.setTextColor(33,33,33); doc.setFontSize(9);
       const rows=[['Date',v.date,'Reported By',v.reported_by],['Severity',v.severity,'Status',v.status],['Location',v.location,'Action Taken',v.action_taken||'-']];
       rows.forEach(row=>{
@@ -318,7 +387,6 @@ async function generatePDF() {
         const lines=doc.splitTextToSize(v.description,contentW-28);
         doc.text(lines,margin+28,y); y+=lines.length*5+2;
       }
-      // Photos
       checkPage(60);
       const photoY=y; let added=false;
       doc.setFontSize(8); doc.setFont('helvetica','bold'); doc.setTextColor(100,100,100);
@@ -331,11 +399,9 @@ async function generatePDF() {
         catch(e) { doc.text('AFTER: unavailable',margin+95,photoY+5); }
       }
       if (added) y=photoY+62; else y+=5;
-      // Divider
       doc.setDrawColor(220,220,220); doc.setTextColor(33,33,33);
       doc.line(margin,y,margin+contentW,y); y+=6;
     }
-    // Page numbers
     const total=doc.getNumberOfPages();
     for (let p=1;p<=total;p++) { doc.setPage(p); doc.setFontSize(8); doc.setTextColor(150,150,150); doc.text(`Page ${p} of ${total}  |  Safety Violation Tracker`,margin,290); }
     doc.save(`Safety_Violations_${state.pdfProject==='all'?'All':state.pdfProject}_${dateStr.replace(/\//g,'-')}.pdf`);
@@ -347,25 +413,67 @@ async function generatePDF() {
 function showToast(msg){ state.toast=msg; render(); setTimeout(()=>{state.toast=null;render();},3000); }
 function handlePhotoSelect(field,file){ if(!file)return; const r=new FileReader(); r.onload=e=>{state.form[field]=file;state.form[field.replace('Photo','Preview')]=e.target.result;render();}; r.readAsDataURL(file); }
 
+// ============================================================
+// RENDER
+// ============================================================
 function render(){
   const app=document.getElementById('app');
   if (!state.loggedIn){ app.innerHTML=renderLogin(); return; }
   if (state.selectedViolation){ app.innerHTML=renderDetail(); attachDetailEvents(); return; }
-  app.innerHTML=`${renderHeader()}${renderNav()}<div class="content">${state.tab==='dashboard'?renderDashboard():''}${state.tab==='report'?renderReportForm():''}${state.tab==='violations'?renderViolationsList():''}${state.tab==='projects'?renderProjects():''}</div>${state.showPDFModal?renderPDFModal():''}${state.toast?`<div class="toast">${state.toast}</div>`:''}`;
+  const newCount=getNewViolations().length;
+  app.innerHTML=`${renderHeader()}${renderNav(newCount)}<div class="content">${state.tab==='dashboard'?renderDashboard(newCount):''}${state.tab==='report'?renderReportForm():''}${state.tab==='violations'?renderViolationsList():''}${state.tab==='projects'?renderProjects():''}</div>${state.showPDFModal?renderPDFModal():''}${state.toast?`<div class="toast">${state.toast}</div>`:''}`;
   attachEvents();
 }
 
 function renderHeader(){ return `<div class="header"><div class="header-top"><div><h1>🦺 ${t('appTitle')}</h1><p>${t('appSub')}</p></div><button class="lang-btn" onclick="toggleLang()">${state.lang==='en'?'中文':'EN'}</button></div></div>`; }
-function renderNav(){ return `<div class="nav">${[{id:'dashboard',icon:'📊',label:t('dashboard')},{id:'report',icon:'➕',label:t('report')},{id:'violations',icon:'⚠️',label:t('violations')},{id:'projects',icon:'🏗️',label:t('projects')}].map(tab=>`<button class="nav-btn ${state.tab===tab.id?'active':''}" onclick="setTab('${tab.id}')"><span class="icon">${tab.icon}</span><span>${tab.label}</span></button>`).join('')}</div>`; }
+
+function renderNav(newCount){
+  return `<div class="nav">
+    <button class="nav-btn ${state.tab==='dashboard'?'active':''}" onclick="setTab('dashboard')"><span class="icon">📊</span><span>${t('dashboard')}</span></button>
+    <button class="nav-btn ${state.tab==='report'?'active':''}" onclick="setTab('report')"><span class="icon">➕</span><span>${t('report')}</span></button>
+    <button class="nav-btn ${state.tab==='violations'?'active':''}" onclick="setTab('violations')">
+      <span class="icon">⚠️</span><span>${t('violations')}</span>
+      ${newCount>0?`<span class="nav-badge">${newCount}</span>`:''}
+    </button>
+    <button class="nav-btn ${state.tab==='projects'?'active':''}" onclick="setTab('projects')"><span class="icon">🏗️</span><span>${t('projects')}</span></button>
+  </div>`;
+}
+
 function renderLogin(){ return `<div class="login-screen"><div class="login-logo">🦺</div><div class="login-title">${t('appTitle')}</div><div class="login-sub">${t('appSub')}</div><div class="login-card"><label>${t('password')}</label><input type="password" id="pw-input" placeholder="${t('enterPassword')}" style="margin-bottom:16px"/><button class="btn btn-primary" onclick="doLogin()">${t('login')}</button><div id="pw-error" style="color:#E53935;font-size:13px;margin-top:8px;text-align:center"></div><div style="margin-top:16px;text-align:center"><button class="lang-btn" style="background:#F5F5F5;border:1px solid #E0E0E0;color:#757575" onclick="toggleLang()">${state.lang==='en'?'中文':'EN'}</button></div></div></div>`; }
 
-function renderDashboard(){
-  const total=state.violations.length, open=state.violations.filter(v=>v.status==='Open').length, closed=state.violations.filter(v=>v.status==='Closed').length;
-  const ps=state.projects.map(p=>{const pvs=state.violations.filter(v=>v.project===p);return{name:p,total:pvs.length,closed:pvs.filter(v=>v.status==='Closed').length};}).filter(p=>p.total>0);
-  return `<div class="stats-row"><div class="stat-card"><div class="stat-num">${total}</div><div class="stat-label">${t('totalViolations')}</div></div><div class="stat-card"><div class="stat-num" style="color:var(--warning)">${open}</div><div class="stat-label">${t('openViolations')}</div></div><div class="stat-card"><div class="stat-num" style="color:var(--success)">${closed}</div><div class="stat-label">${t('closedViolations')}</div></div></div>
-  <button class="btn btn-pdf" onclick="state.showPDFModal=true;render()" style="margin-bottom:16px">${t('downloadPDF')}</button>
-  ${ps.length?`<div class="card"><div class="card-title">🏗️ Project Progress</div>${ps.map(p=>`<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:13px;font-weight:600">${p.name}</span><span style="font-size:12px;color:var(--text2)">${p.closed}/${p.total} ${t('cleared')}</span></div><div class="progress-bar"><div class="progress-fill" style="width:${p.total?p.closed/p.total*100:0}%"></div></div></div>`).join('')}</div>`:''}
-  <div class="card"><div class="card-title">⚠️ Recent Violations</div>${state.violations.slice(0,5).map(v=>`<div class="violation-item ${v.status==='Closed'?'closed':v.status==='In Progress'?'in-progress':'open'}" onclick="selectViolation(${v.id})"><div class="violation-header"><div class="violation-title">${v.project} — ${v.violation_type}</div>${severityBadge(v.severity)}</div><div class="violation-meta">${v.date} · ${v.reported_by}</div>${statusBadge(v.status)}</div>`).join('')||`<div class="empty-state"><div class="empty-icon">✅</div><p>No violations yet</p></div>`}</div>`;
+function renderDashboard(newCount){
+  const total=state.violations.length;
+  const open=state.violations.filter(v=>v.status==='Open').length;
+  const closed=state.violations.filter(v=>v.status==='Closed').length;
+
+  // Project cards
+  const projectCards = state.projects.map(p=>{
+    const pvs=state.violations.filter(v=>v.project===p);
+    const pclosed=pvs.filter(v=>v.status==='Closed').length;
+    const popen=pvs.filter(v=>v.status==='Open'||v.status==='In Progress').length;
+    const pnew=getNewViolationsForProject(p).length;
+    const allDone = pvs.length>0 && popen===0;
+    return `<div class="project-card ${popen>0?'has-open':pvs.length>0?'all-closed':''}" onclick="goToProject('${p}')">
+      ${pnew>0?`<span class="project-card-new">${pnew}</span>`:''}
+      <div class="project-card-name">${p}</div>
+      <div class="project-card-count">${pclosed}/${pvs.length}</div>
+      <div class="project-card-label">${t('cleared')}</div>
+      ${popen>0?`<div style="font-size:10px;color:var(--warning);font-weight:700;margin-top:3px">${popen} open</div>`:''}
+      ${allDone?`<div style="font-size:10px;color:var(--success);font-weight:700;margin-top:3px">✅ Done</div>`:''}
+    </div>`;
+  }).join('');
+
+  return `
+    ${newCount>0?`<div class="alert-banner"><span style="font-size:20px">🔔</span><span class="alert-banner-text">${t('newViolationAlert')}</span><span class="alert-banner-count">${newCount}</span><button onclick="markAllSeen();render()" style="background:none;border:none;color:var(--danger);font-size:12px;cursor:pointer;font-weight:600">Dismiss</button></div>`:''}
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num">${total}</div><div class="stat-label">${t('totalViolations')}</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:var(--warning)">${open}</div><div class="stat-label">${t('openViolations')}</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:var(--success)">${closed}</div><div class="stat-label">${t('closedViolations')}</div></div>
+    </div>
+    <button class="btn btn-pdf" onclick="state.showPDFModal=true;render()" style="margin-bottom:16px">${t('downloadPDF')}</button>
+    <div class="card-title" style="margin-bottom:8px">🏗️ Projects</div>
+    <div class="project-grid">${projectCards}</div>
+  `;
 }
 
 function renderReportForm(){
@@ -395,27 +503,107 @@ function renderReportForm(){
 }
 
 function renderViolationsList(){
-  const filtered=state.violations.filter(v=>state.filter==='all'||(state.filter==='open'&&v.status==='Open')||(state.filter==='progress'&&v.status==='In Progress')||(state.filter==='closed'&&v.status==='Closed'));
-  return `<div class="filter-row">
-    <button class="filter-chip ${state.filter==='all'?'active':''}" onclick="setFilter('all')">${t('filterAll')} (${state.violations.length})</button>
-    <button class="filter-chip ${state.filter==='open'?'active':''}" onclick="setFilter('open')">${t('filterOpen')} (${state.violations.filter(v=>v.status==='Open').length})</button>
-    <button class="filter-chip ${state.filter==='progress'?'active':''}" onclick="setFilter('progress')">${t('filterProgress')} (${state.violations.filter(v=>v.status==='In Progress').length})</button>
-    <button class="filter-chip ${state.filter==='closed'?'active':''}" onclick="setFilter('closed')">${t('filterClosed')} (${state.violations.filter(v=>v.status==='Closed').length})</button>
-  </div>
-  ${state.loading?`<div class="loading"><div class="spinner"></div><span>Loading...</span></div>`:''}
-  ${!state.loading&&filtered.length===0?`<div class="empty-state"><div class="empty-icon">✅</div><p>${t('noViolations')}</p></div>`:''}
-  ${filtered.map(v=>`<div class="violation-item ${v.status==='Closed'?'closed':v.status==='In Progress'?'in-progress':'open'}" onclick="selectViolation(${v.id})"><div class="violation-header"><div class="violation-title">${v.project} — ${v.violation_type}</div>${severityBadge(v.severity)}</div><div class="violation-meta">${v.date} · ${v.reported_by} · ${v.location}</div><div style="margin-top:6px">${statusBadge(v.status)}<span style="font-size:11px;color:var(--text2);margin-left:8px">${v.before_photo_url?'📷':''}${v.after_photo_url?' ✅':''}</span></div></div>`).join('')}`;
+  const projectViolations = state.projectFilter
+    ? state.violations.filter(v=>v.project===state.projectFilter)
+    : state.violations;
+
+  const filtered=projectViolations.filter(v=>state.filter==='all'||(state.filter==='open'&&v.status==='Open')||(state.filter==='progress'&&v.status==='In Progress')||(state.filter==='closed'&&v.status==='Closed'));
+
+  return `
+    ${state.projectFilter?`
+      <div class="project-view-header">
+        <div>
+          <div class="project-view-title">🏗️ ${state.projectFilter}</div>
+          <div class="project-view-stats">${projectViolations.length} violations · ${projectViolations.filter(v=>v.status==='Closed').length} closed</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="btn btn-sm" style="background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.4);margin:0" onclick="state.pdfProject='${state.projectFilter}';state.showPDFModal=true;render()">📄 PDF</button>
+          <button onclick="state.projectFilter=null;render()" style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.4);color:white;padding:6px 10px;border-radius:6px;font-size:12px;cursor:pointer">✕ All</button>
+        </div>
+      </div>
+    `:`<div style="font-size:14px;font-weight:700;margin-bottom:12px">All Violations</div>`}
+    <div class="filter-row">
+      <button class="filter-chip ${state.filter==='all'?'active':''}" onclick="setFilter('all')">${t('filterAll')} (${projectViolations.length})</button>
+      <button class="filter-chip ${state.filter==='open'?'active':''}" onclick="setFilter('open')">${t('filterOpen')} (${projectViolations.filter(v=>v.status==='Open').length})</button>
+      <button class="filter-chip ${state.filter==='progress'?'active':''}" onclick="setFilter('progress')">${t('filterProgress')} (${projectViolations.filter(v=>v.status==='In Progress').length})</button>
+      <button class="filter-chip ${state.filter==='closed'?'active':''}" onclick="setFilter('closed')">${t('filterClosed')} (${projectViolations.filter(v=>v.status==='Closed').length})</button>
+    </div>
+    ${state.loading?`<div class="loading"><div class="spinner"></div><span>Loading...</span></div>`:''}
+    ${!state.loading&&filtered.length===0?`<div class="empty-state"><div class="empty-icon">✅</div><p>${t('noViolations')}</p></div>`:''}
+    ${filtered.map(v=>{
+      const isNew = new Date(v.created_at).getTime() > state.lastSeenTime;
+      return `<div class="violation-item ${v.status==='Closed'?'closed':v.status==='In Progress'?'in-progress':'open'}" onclick="selectViolation(${v.id})" style="${isNew?'box-shadow:0 0 0 2px var(--danger);':''}">
+        <div class="violation-header"><div class="violation-title">${v.project} — ${v.violation_type} ${isNew?'<span style="font-size:10px;background:var(--danger);color:white;padding:1px 6px;border-radius:10px;font-weight:700">NEW</span>':''}</div>${severityBadge(v.severity)}</div>
+        <div class="violation-meta">${v.date} · ${v.reported_by} · ${v.location}</div>
+        <div style="margin-top:6px">${statusBadge(v.status)}<span style="font-size:11px;color:var(--text2);margin-left:8px">${v.before_photo_url?'📷':''}${v.after_photo_url?' ✅':''}</span></div>
+      </div>`;
+    }).join('')}
+  `;
 }
 
 function renderProjects(){
-  return `<div class="card"><div class="card-title">🏗️ ${t('projects')}</div>${state.projects.map(p=>{const pvs=state.violations.filter(v=>v.project===p);const closed=pvs.filter(v=>v.status==='Closed').length;return`<div class="info-row"><span class="info-label">${p}</span><span class="info-value">${pvs.length} violations / ${closed} closed</span></div>`;}).join('')}${state.showAddProject?`<div style="margin-top:12px"><input type="text" id="new-project-input" value="${state.newProjectName}" placeholder="${t('newProjectName')}" style="margin-bottom:8px"/><div class="btn-row"><button class="btn btn-primary btn-sm" onclick="addProject()">${t('add')}</button><button class="btn btn-outline btn-sm" onclick="state.showAddProject=false;render()">${t('cancel')}</button></div></div>`:`<button class="btn btn-outline" style="margin-top:12px" onclick="state.showAddProject=true;render()">${t('addProject')}</button>`}</div>`;
+  return `
+    <div class="card"><div class="card-title">🏗️ ${t('projects')}</div>
+      ${state.projects.map(p=>{
+        const pvs=state.violations.filter(v=>v.project===p);
+        const closed=pvs.filter(v=>v.status==='Closed').length;
+        const isEditing = state.editingProject===p;
+        if (isEditing) {
+          return `<div class="project-list-item" style="flex-direction:column;align-items:stretch">
+            <input type="text" id="edit-project-input" value="${state.editingProjectName}" style="margin-bottom:8px"/>
+            <label style="margin-bottom:4px">${t('adminPassword')}</label>
+            <input type="password" id="edit-project-pw" placeholder="Admin password" value="${state.adminPw}" style="margin-bottom:8px"/>
+            <div class="btn-row">
+              <button class="btn btn-primary btn-sm" onclick="doSaveEditProject()">${t('saveChanges')}</button>
+              <button class="btn btn-outline btn-sm" onclick="state.editingProject=null;state.adminPw='';render()">${t('cancel')}</button>
+            </div>
+          </div>`;
+        }
+        if (state.deleteProjectConfirm && state.deleteProjectName===p) {
+          return `<div class="project-list-item" style="flex-direction:column;align-items:stretch">
+            <div class="danger-box">
+              <div style="font-size:13px;font-weight:600;color:var(--danger);margin-bottom:8px">⚠️ ${t('deleteProjectConfirm')}</div>
+              <label>${t('adminPassword')}</label>
+              <input type="password" id="delete-project-pw" placeholder="Admin password" value="${state.adminPw}" style="margin-bottom:8px"/>
+              <div class="btn-row">
+                <button class="btn btn-danger btn-sm" onclick="doConfirmDeleteProject()">${t('confirmDelete')}</button>
+                <button class="btn btn-outline btn-sm" onclick="state.deleteProjectConfirm=false;state.adminPw='';render()">${t('cancel')}</button>
+              </div>
+            </div>
+          </div>`;
+        }
+        return `<div class="project-list-item">
+          <div>
+            <div class="project-list-name">${p}</div>
+            <div class="project-list-count">${pvs.length} violations · ${closed} closed</div>
+          </div>
+          <div class="project-list-actions">
+            <button class="btn btn-outline btn-sm" onclick="startEditProject('${p}')">✏️</button>
+            <button class="btn btn-outline-danger btn-sm" onclick="startDeleteProject('${p}')">🗑</button>
+          </div>
+        </div>`;
+      }).join('')}
+      ${state.showAddProject?`
+        <div style="margin-top:12px">
+          <input type="text" id="new-project-input" value="${state.newProjectName}" placeholder="${t('newProjectName')}" style="margin-bottom:8px"/>
+          <div class="btn-row">
+            <button class="btn btn-primary btn-sm" onclick="addProject()">${t('add')}</button>
+            <button class="btn btn-outline btn-sm" onclick="state.showAddProject=false;render()">${t('cancel')}</button>
+          </div>
+        </div>
+      `:`<button class="btn btn-outline" style="margin-top:12px" onclick="state.showAddProject=true;render()">${t('addProject')}</button>`}
+    </div>
+  `;
 }
 
 function renderPDFModal(){
   const count=state.pdfProject==='all'?state.violations.length:state.violations.filter(v=>v.project===state.pdfProject).length;
   return `<div class="modal-overlay"><div class="modal"><div class="modal-title">📄 ${t('downloadPDF')}</div>
     <label>Select Project</label>
-    <select id="pdf-proj" style="margin-bottom:8px"><option value="all">All Projects (${state.violations.length})</option>${state.projects.map(p=>`<option value="${p}" ${state.pdfProject===p?'selected':''}>${p} (${state.violations.filter(v=>v.project===p).length})</option>`).join('')}</select>
+    <select id="pdf-proj" style="margin-bottom:8px">
+      <option value="all">${t('allProjects')} (${state.violations.length})</option>
+      ${state.projects.map(p=>`<option value="${p}" ${state.pdfProject===p?'selected':''}>${p} (${state.violations.filter(v=>v.project===p).length})</option>`).join('')}
+    </select>
     <div style="font-size:12px;color:var(--text2);margin-bottom:16px">Will generate PDF for ${count} violation(s) with photos</div>
     <div class="btn-row">
       <button class="btn btn-pdf" onclick="generatePDF()" ${state.pdfGenerating?'disabled':''}>${state.pdfGenerating?`<span class="spinner" style="width:16px;height:16px;border-width:2px;border-top-color:white"></span> ${t('generating')}`:t('downloadPDF')}</button>
@@ -464,10 +652,10 @@ function renderEditForm(){
   return `${renderHeader()}<div class="content">
     <div class="detail-header"><button class="back-btn" onclick="state.editMode=false;state.adminPw='';render()">←</button><div style="font-size:16px;font-weight:700">${t('editViolation')}</div></div>
     <div class="card">
-      <label>Project</label><select id="ef-project"><option value="">${t('selectProject')}</option>${state.projects.map(p=>`<option value="${p}" ${ef.project===p?'selected':''}>${p}</option>`).join('')}</select>
+      <label>Project</label><select id="ef-project">${state.projects.map(p=>`<option value="${p}" ${ef.project===p?'selected':''}>${p}</option>`).join('')}</select>
       <label>Reported By</label><input type="text" id="ef-reported_by" value="${ef.reported_by||''}"/>
       <label>Date</label><input type="date" id="ef-date" value="${ef.date||''}"/>
-      <label>Violation Type</label><select id="ef-violation_type"><option value="">${t('selectType')}</option>${VIOLATION_TYPES.map((type,i)=>`<option value="${type}" ${ef.violation_type===type?'selected':''}>${state.lang==='zh'?VIOLATION_TYPES_ZH[i]:type}</option>`).join('')}</select>
+      <label>Violation Type</label><select id="ef-violation_type">${VIOLATION_TYPES.map((type,i)=>`<option value="${type}" ${ef.violation_type===type?'selected':''}>${state.lang==='zh'?VIOLATION_TYPES_ZH[i]:type}</option>`).join('')}</select>
       <label>Severity</label><select id="ef-severity"><option value="Low" ${ef.severity==='Low'?'selected':''}>Low</option><option value="Medium" ${ef.severity==='Medium'?'selected':''}>Medium</option><option value="High" ${ef.severity==='High'?'selected':''}>High</option><option value="Critical" ${ef.severity==='Critical'?'selected':''}>Critical</option></select>
       <label>Status</label><select id="ef-status"><option value="Open" ${ef.status==='Open'?'selected':''}>Open</option><option value="In Progress" ${ef.status==='In Progress'?'selected':''}>In Progress</option><option value="Closed" ${ef.status==='Closed'?'selected':''}>Closed</option></select>
       <label>Location</label><input type="text" id="ef-location" value="${ef.location||''}"/>
@@ -488,9 +676,13 @@ function attachEvents(){
   const np=document.getElementById('new-project-input'); if(np) np.addEventListener('input',()=>{state.newProjectName=np.value;});
   const pp=document.getElementById('pdf-proj'); if(pp) pp.addEventListener('change',()=>{state.pdfProject=pp.value;render();});
 }
+
 function attachDetailEvents(){
   ['admin-pw','admin-pw-del','edit-admin-pw'].forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener('input',()=>{state.adminPw=el.value;}); });
   ['project','reported_by','date','violation_type','severity','status','location','description','action_taken'].forEach(f=>{ const el=document.getElementById(`ef-${f}`); if(el){ el.addEventListener('change',()=>{state.editForm[f]=el.value;}); el.addEventListener('input',()=>{state.editForm[f]=el.value;}); } });
+  const ep=document.getElementById('edit-project-input'); if(ep) ep.addEventListener('input',()=>{state.editingProjectName=ep.value;});
+  const epw=document.getElementById('edit-project-pw'); if(epw) epw.addEventListener('input',()=>{state.adminPw=epw.value;});
+  const dpw=document.getElementById('delete-project-pw'); if(dpw) dpw.addEventListener('input',()=>{state.adminPw=dpw.value;});
 }
 
 function handlePhoto(type,input){ if(input.files[0]) handlePhotoSelect(type+'Photo',input.files[0]); }
@@ -499,9 +691,17 @@ function doDeleteAfterPhoto(){ state.adminPw=document.getElementById('admin-pw')
 function doDeleteViolation(){ state.adminPw=document.getElementById('admin-pw-del')?.value||state.adminPw; deleteViolation(); }
 function doSaveEdit(){ state.adminPw=document.getElementById('edit-admin-pw')?.value||state.adminPw; saveEdit(); }
 function startEdit(){ state.editForm={...state.selectedViolation}; state.editMode=true; state.adminPw=''; render(); }
-function doLogin(){ const pw=document.getElementById('pw-input').value; if(pw===APP_PASSWORD){state.loggedIn=true;render();loadViolations();}else{document.getElementById('pw-error').textContent=t('wrongPassword');} }
+
+function startEditProject(name){ state.editingProject=name; state.editingProjectName=name; state.adminPw=''; render(); }
+function startDeleteProject(name){ state.deleteProjectConfirm=true; state.deleteProjectName=name; state.adminPw=''; render(); }
+function doSaveEditProject(){ state.adminPw=document.getElementById('edit-project-pw')?.value||state.adminPw; state.editingProjectName=document.getElementById('edit-project-input')?.value||state.editingProjectName; saveEditProject(); }
+function doConfirmDeleteProject(){ state.adminPw=document.getElementById('delete-project-pw')?.value||state.adminPw; confirmDeleteProject(); }
+
+function goToProject(project){ state.projectFilter=project; state.filter='all'; state.tab='violations'; render(); }
+
+function doLogin(){ const pw=document.getElementById('pw-input').value; if(pw===APP_PASSWORD){state.loggedIn=true; state.lastSeenTime=parseInt(localStorage.getItem('lastSeenTime')||'0'); render();loadViolations();}else{document.getElementById('pw-error').textContent=t('wrongPassword');} }
 function toggleLang(){ state.lang=state.lang==='en'?'zh':'en'; render(); }
-function setTab(tab){ state.tab=tab; if(tab==='violations'||tab==='dashboard') loadViolations(); else render(); }
+function setTab(tab){ state.tab=tab; if(tab==='violations'){ state.projectFilter=null; loadViolations(); } else if(tab==='dashboard') loadViolations(); else render(); }
 function setFilter(f){ state.filter=f; render(); }
 function selectViolation(id){ state.selectedViolation=state.violations.find(v=>v.id===id); state.editMode=false; state.deleteViolationConfirm=false; state.deleteConfirm=false; state.adminPw=''; render(); }
 function addProject(){ const name=document.getElementById('new-project-input')?.value||state.newProjectName; if(name.trim()){state.projects.push(name.trim());state.newProjectName='';state.showAddProject=false;render();} }
