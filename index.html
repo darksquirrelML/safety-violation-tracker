@@ -12,7 +12,21 @@
   <link rel="apple-touch-icon" href="icon-512.png" />
   <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
+  <script src="config.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    (function() {
+      const session = localStorage.getItem('svt_session');
+      if (!session) { window.location.href = 'login.html'; return; }
+      try {
+        const s = JSON.parse(session);
+        if (Date.now() > s.expires_at * 1000) {
+          localStorage.removeItem('svt_session');
+          window.location.href = 'login.html';
+        }
+      } catch(e) { window.location.href = 'login.html'; }
+    })();
+  </script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     :root { --primary: #FF6B35; --primary-dark: #E55A26; --danger: #E53935; --success: #43A047; --warning: #FB8C00; --bg: #F5F5F5; --card: #FFFFFF; --text: #212121; --text2: #757575; --border: #E0E0E0; --radius: 12px; }
@@ -134,11 +148,24 @@
 <body>
 <div id="app"></div>
 <script>
-const SUPABASE_URL = 'https://ihwgejsioutzcmkaaumi.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlod2dlanNpb3V0emNta2FhdW1pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4OTMxMDcsImV4cCI6MjA5MTQ2OTEwN30.951EDcnMQMNzirlMxmxOLi3CmR6suhPNQNqvgvNC9rA';
-const APP_PASSWORD = '1234';
-const ADMIN_PASSWORD = 'admin1234';
+// Credentials loaded from config.js
+const SUPABASE_URL = CONFIG.SUPABASE_URL;
+const SUPABASE_KEY = CONFIG.SUPABASE_KEY;
+const ADMIN_PASSWORD = 'admin1234'; // Change this!
 const BUCKET = 'safety-violations';
+const APP_NAME = 'safety-violation';
+
+// Get current user from session
+function getCurrentUser() {
+  return getSession() ? getSession().user : null;
+}
+
+// Get access token
+function getAccessToken() {
+  const s = getSession();
+  return s ? s.access_token : SUPABASE_KEY;
+}
+
 
 const T = {
   en: {
@@ -236,7 +263,6 @@ function translateStatus(s) {
 // ============================================================
 let state = {
   lang: localStorage.getItem('svt_lang') || 'en',
-  loggedIn: localStorage.getItem('svt_loggedIn') === 'true',
   tab: 'dashboard',
   violations: [],
   projects: JSON.parse(localStorage.getItem('svt_projects') || '["P202","P209","P210","P211","P212","P213","P216"]'),
@@ -256,8 +282,7 @@ let state = {
 
 function t(k) { return T[state.lang][k] || k; }
 
-function saveSession() {
-  localStorage.setItem('svt_loggedIn', state.loggedIn);
+function saveAppState() {
   localStorage.setItem('svt_lang', state.lang);
   localStorage.setItem('svt_projects', JSON.stringify(state.projects));
   localStorage.setItem('svt_lastProject', state.projectFilter || 'all');
@@ -288,7 +313,8 @@ function updateBadge(count) {
 // SUPABASE
 // ============================================================
 async function supaFetch(path, options={}) {
-  const headers = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
+  const token = getAuthToken() || SUPABASE_KEY;
+  const headers = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
   if (options.headers) Object.assign(headers, options.headers);
   const res = await fetch(SUPABASE_URL + '/rest/v1/' + path, { ...options, headers });
   if (!res.ok) throw new Error(await res.text());
@@ -431,14 +457,14 @@ function saveEditProject() {
   const idx = state.projects.indexOf(state.editingProject);
   if (idx !== -1) state.projects[idx] = name;
   state.editingProject = null; state.editingProjectName = ''; state.adminPw = '';
-  saveSession(); showToast(t('projectUpdated')); render();
+  saveAppState(); showToast(t('projectUpdated')); render();
 }
 
 function confirmDeleteProject() {
   if (state.adminPw !== ADMIN_PASSWORD) { showToast('❌ Wrong admin password'); return; }
   state.projects = state.projects.filter(p => p !== state.deleteProjectName);
   state.deleteProjectConfirm = false; state.deleteProjectName = ''; state.adminPw = '';
-  saveSession(); showToast(t('projectDeleted')); render();
+  saveAppState(); showToast(t('projectDeleted')); render();
 }
 
 // ============================================================
@@ -530,15 +556,17 @@ function handlePhotoSelect(field, file) { if (!file) return; const r = new FileR
 // ============================================================
 function render() {
   const app = document.getElementById('app');
-  if (!state.loggedIn) { app.innerHTML = renderLogin(); return; }
   if (state.selectedViolation) { app.innerHTML = renderDetail(); attachDetailEvents(); return; }
   const newCount = getNewViolations().length;
-  app.innerHTML = `${renderHeader()}${renderNav(newCount)}<div class="content">${state.tab === 'dashboard' ? renderDashboard(newCount) : ''}${state.tab === 'report' ? renderReportForm() : ''}${state.tab === 'violations' ? renderViolationsList() : ''}${state.tab === 'projects' ? renderProjects() : ''}</div>${state.toast ? `<div class="toast">${state.toast}</div>` : ''}`;
+  const user = getCurrentUser();
+  const userEmail = user ? user.email : '';
+  app.innerHTML = `${renderHeader(userEmail)}${renderNav(newCount)}<div class="content">${state.tab === 'dashboard' ? renderDashboard(newCount) : ''}${state.tab === 'report' ? renderReportForm() : ''}${state.tab === 'violations' ? renderViolationsList() : ''}${state.tab === 'projects' ? renderProjects() : ''}</div>${state.toast ? `<div class="toast">${state.toast}</div>` : ''}`;
   attachEvents();
 }
 
-function renderHeader() {
-  return `<div class="header"><div class="header-top"><div><h1>🦺 ${t('appTitle')}</h1><p>${t('appSub')}</p></div><div style="display:flex;gap:8px;align-items:center"><button class="lang-btn" onclick="toggleLang()">${state.lang === 'en' ? '中文' : 'EN'}</button><button class="logout-btn" onclick="doLogout()">⏻</button></div></div></div>`;
+function renderHeader(userEmail) {
+  const shortEmail = userEmail ? userEmail.split('@')[0] : '';
+  return `<div class="header"><div class="header-top"><div><h1>🦺 ${t('appTitle')}</h1><p>${shortEmail ? '👤 '+shortEmail : t('appSub')}</p></div><div style="display:flex;gap:8px;align-items:center"><button class="lang-btn" onclick="toggleLang()">${state.lang === 'en' ? '中文' : 'EN'}</button><button class="logout-btn" onclick="doLogout()">⏻ ${t('logout')}</button></div></div></div>`;
 }
 
 function renderNav(newCount) {
@@ -551,10 +579,6 @@ function renderNav(newCount) {
     </button>
     <button class="nav-btn ${state.tab === 'projects' ? 'active' : ''}" onclick="setTab('projects')"><span class="icon">🏗️</span><span>${t('projects')}</span></button>
   </div>`;
-}
-
-function renderLogin() {
-  return `<div class="login-screen"><div class="login-logo">🦺</div><div class="login-title">${t('appTitle')}</div><div class="login-sub">${t('appSub')}</div><div class="login-card"><label>${t('password')}</label><input type="password" id="pw-input" placeholder="${t('enterPassword')}" style="margin-bottom:16px" onkeydown="if(event.key==='Enter')doLogin()"/><button class="btn btn-primary" onclick="doLogin()">${t('login')}</button><div id="pw-error" style="color:#E53935;font-size:13px;margin-top:8px;text-align:center"></div><div style="margin-top:16px;text-align:center"><button class="lang-btn" style="background:#F5F5F5;border:1px solid #E0E0E0;color:#757575" onclick="toggleLang()">${state.lang === 'en' ? '中文' : 'EN'}</button></div></div></div>`;
 }
 
 function renderDashboard(newCount) {
@@ -839,23 +863,12 @@ function goToProject(project) {
   render();
 }
 
-function doLogin() {
-  const pw = document.getElementById('pw-input').value;
-  if (pw === APP_PASSWORD) {
-    state.loggedIn = true;
-    saveSession();
-    render();
-    loadViolations();
-  } else {
-    document.getElementById('pw-error').textContent = t('wrongPassword');
-  }
-}
-
 function doLogout() {
   if (confirm(state.lang === 'zh' ? '确定要退出登录吗？' : 'Are you sure you want to logout?')) {
-    state.loggedIn = false;
-    localStorage.setItem('svt_loggedIn', 'false');
-    render();
+    const token = getAuthToken();
+    if (token) supabaseSignOut(token).catch(() => {});
+    clearSession();
+    window.location.href = 'login.html';
   }
 }
 
@@ -867,14 +880,8 @@ function toggleLang() {
 
 function setTab(tab) {
   state.tab = tab;
-  // Remember last project when switching to violations tab
-  if (tab === 'violations') {
-    loadViolations();
-  } else if (tab === 'dashboard') {
-    loadViolations();
-  } else {
-    render();
-  }
+  if (tab === 'violations' || tab === 'dashboard') loadViolations();
+  else render();
 }
 
 function setFilter(f) { state.filter = f; render(); }
@@ -887,12 +894,17 @@ function selectViolation(id) {
 
 function addProject() {
   const name = document.getElementById('new-project-input')?.value || state.newProjectName;
-  if (name.trim()) { state.projects.push(name.trim()); state.newProjectName = ''; state.showAddProject = false; saveSession(); render(); }
+  if (name.trim()) { state.projects.push(name.trim()); state.newProjectName = ''; state.showAddProject = false; saveAppState(); render(); }
 }
 
-// Init
-render();
-if (state.loggedIn) loadViolations();
+// Init — check auth then load
+const initUser = getCurrentUser();
+if (!initUser) {
+  window.location.href = 'login.html';
+} else {
+  render();
+  loadViolations();
+}
 </script>
 </body>
 </html>
