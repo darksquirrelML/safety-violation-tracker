@@ -13,12 +13,12 @@
   <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
   <script src="config.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
+    // Redirect to login if not authenticated
     (function() {
-      const session = localStorage.getItem('svt_session');
-      if (!session) { window.location.href = 'login.html'; return; }
       try {
+        const session = localStorage.getItem('svt_session');
+        if (!session) { window.location.href = 'login.html'; return; }
         const s = JSON.parse(session);
         if (Date.now() > s.expires_at * 1000) {
           localStorage.removeItem('svt_session');
@@ -27,6 +27,7 @@
       } catch(e) { window.location.href = 'login.html'; }
     })();
   </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     :root { --primary: #FF6B35; --primary-dark: #E55A26; --danger: #E53935; --success: #43A047; --warning: #FB8C00; --bg: #F5F5F5; --card: #FFFFFF; --text: #212121; --text2: #757575; --border: #E0E0E0; --radius: 12px; }
@@ -148,24 +149,11 @@
 <body>
 <div id="app"></div>
 <script>
-// Credentials loaded from config.js
+// Credentials from config.js
 const SUPABASE_URL = CONFIG.SUPABASE_URL;
 const SUPABASE_KEY = CONFIG.SUPABASE_KEY;
-const ADMIN_PASSWORD = 'admin1234'; // Change this!
+const ADMIN_PASSWORD = 'admin1234';
 const BUCKET = 'safety-violations';
-const APP_NAME = 'safety-violation';
-
-// Get current user from session
-function getCurrentUser() {
-  return getSession() ? getSession().user : null;
-}
-
-// Get access token
-function getAccessToken() {
-  const s = getSession();
-  return s ? s.access_token : SUPABASE_KEY;
-}
-
 
 const T = {
   en: {
@@ -282,7 +270,8 @@ let state = {
 
 function t(k) { return T[state.lang][k] || k; }
 
-function saveAppState() {
+function saveSession() {
+  localStorage.setItem('svt_loggedIn', state.loggedIn);
   localStorage.setItem('svt_lang', state.lang);
   localStorage.setItem('svt_projects', JSON.stringify(state.projects));
   localStorage.setItem('svt_lastProject', state.projectFilter || 'all');
@@ -313,8 +302,7 @@ function updateBadge(count) {
 // SUPABASE
 // ============================================================
 async function supaFetch(path, options={}) {
-  const token = getAuthToken() || SUPABASE_KEY;
-  const headers = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
+  const headers = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
   if (options.headers) Object.assign(headers, options.headers);
   const res = await fetch(SUPABASE_URL + '/rest/v1/' + path, { ...options, headers });
   if (!res.ok) throw new Error(await res.text());
@@ -457,14 +445,16 @@ function saveEditProject() {
   const idx = state.projects.indexOf(state.editingProject);
   if (idx !== -1) state.projects[idx] = name;
   state.editingProject = null; state.editingProjectName = ''; state.adminPw = '';
-  saveAppState(); showToast(t('projectUpdated')); render();
+  localStorage.setItem('svt_projects', JSON.stringify(state.projects));
+  showToast(t('projectUpdated')); render();
 }
 
 function confirmDeleteProject() {
   if (state.adminPw !== ADMIN_PASSWORD) { showToast('❌ Wrong admin password'); return; }
   state.projects = state.projects.filter(p => p !== state.deleteProjectName);
   state.deleteProjectConfirm = false; state.deleteProjectName = ''; state.adminPw = '';
-  saveAppState(); showToast(t('projectDeleted')); render();
+  localStorage.setItem('svt_projects', JSON.stringify(state.projects));
+  showToast(t('projectDeleted')); render();
 }
 
 // ============================================================
@@ -558,15 +548,14 @@ function render() {
   const app = document.getElementById('app');
   if (state.selectedViolation) { app.innerHTML = renderDetail(); attachDetailEvents(); return; }
   const newCount = getNewViolations().length;
-  const user = getCurrentUser();
-  const userEmail = user ? user.email : '';
+  const user = getSession() ? getSession().user : null;
+  const userEmail = user ? user.email.split('@')[0] : '';
   app.innerHTML = `${renderHeader(userEmail)}${renderNav(newCount)}<div class="content">${state.tab === 'dashboard' ? renderDashboard(newCount) : ''}${state.tab === 'report' ? renderReportForm() : ''}${state.tab === 'violations' ? renderViolationsList() : ''}${state.tab === 'projects' ? renderProjects() : ''}</div>${state.toast ? `<div class="toast">${state.toast}</div>` : ''}`;
   attachEvents();
 }
 
 function renderHeader(userEmail) {
-  const shortEmail = userEmail ? userEmail.split('@')[0] : '';
-  return `<div class="header"><div class="header-top"><div><h1>🦺 ${t('appTitle')}</h1><p>${shortEmail ? '👤 '+shortEmail : t('appSub')}</p></div><div style="display:flex;gap:8px;align-items:center"><button class="lang-btn" onclick="toggleLang()">${state.lang === 'en' ? '中文' : 'EN'}</button><button class="logout-btn" onclick="doLogout()">⏻ ${t('logout')}</button></div></div></div>`;
+  return `<div class="header"><div class="header-top"><div><h1>🦺 ${t('appTitle')}</h1><p>${userEmail ? '👤 '+userEmail : t('appSub')}</p></div><div style="display:flex;gap:8px;align-items:center"><button class="lang-btn" onclick="toggleLang()">${state.lang === 'en' ? '中文' : 'EN'}</button><button class="logout-btn" onclick="doLogout()">⏻ ${t('logout')}</button></div></div></div>`;
 }
 
 function renderNav(newCount) {
@@ -894,12 +883,12 @@ function selectViolation(id) {
 
 function addProject() {
   const name = document.getElementById('new-project-input')?.value || state.newProjectName;
-  if (name.trim()) { state.projects.push(name.trim()); state.newProjectName = ''; state.showAddProject = false; saveAppState(); render(); }
+  if (name.trim()) { state.projects.push(name.trim()); state.newProjectName = ''; state.showAddProject = false; localStorage.setItem('svt_projects', JSON.stringify(state.projects)); render(); }
 }
 
-// Init — check auth then load
-const initUser = getCurrentUser();
-if (!initUser) {
+// Init — verify auth then load
+const initSession = getSession();
+if (!initSession) {
   window.location.href = 'login.html';
 } else {
   render();
