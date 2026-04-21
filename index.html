@@ -1,25 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <meta name="theme-color" content="#FF6B35" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Safety Tracker" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <meta name="theme-color" content="#FF6B35"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-title" content="SVT"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
   <title>Safety Violation Tracker</title>
-  <link rel="manifest" href="manifest.json" />
-  <link rel="apple-touch-icon" href="icon-512.png" />
-  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png" />
-  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <link rel="icon" href="./icon-192.png">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-  <script src="config.js"></script>
-  <script>
-    // Redirect to login if not authenticated
-    // Auth check handled by Supabase JS library in boot section
-  </script>
+  <script src="./config.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <style>
+<style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     :root { --primary: #FF6B35; --primary-dark: #E55A26; --danger: #E53935; --success: #43A047; --warning: #FB8C00; --bg: #F5F5F5; --card: #FFFFFF; --text: #212121; --text2: #757575; --border: #E0E0E0; --radius: 12px; }
     body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; max-width: 480px; margin: 0 auto; }
@@ -138,16 +133,17 @@
   </style>
 </head>
 <body>
+
 <!-- LOGIN SCREEN -->
-<div id="svt-login" style="display:flex;font-family:'Segoe UI',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#FF6B35,#E53935);padding:24px">
+<div id="svt-login" style="display:flex;font-family:'Segoe UI',sans-serif;min-height:100vh;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#FF6B35,#E53935);padding:24px">
   <div style="font-size:56px;margin-bottom:10px">🦺</div>
   <div style="font-size:20px;font-weight:800;color:#fff;margin-bottom:4px">Safety Violation Tracker</div>
   <div style="font-size:13px;color:rgba(255,255,255,.8);margin-bottom:28px">Construction Safety Management</div>
   <div style="background:#fff;border-radius:16px;padding:24px;width:100%;max-width:360px;box-shadow:0 8px 32px rgba(0,0,0,.2)">
     <div style="font-size:12px;font-weight:600;color:#757575;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Email</div>
-    <input id="svt-email" type="email" placeholder="your@email.com" style="width:100%;padding:12px;border:1.5px solid #E0E0E0;border-radius:8px;font-size:14px;margin-bottom:12px;outline:none;box-sizing:border-box">
+    <input id="svt-email" type="email" placeholder="your@email.com" style="width:100%;padding:12px;border:1.5px solid #E0E0E0;border-radius:8px;font-size:14px;margin-bottom:12px;outline:none;box-sizing:border-box" onkeydown="if(event.key==='Enter')svtLogin()">
     <div style="font-size:12px;font-weight:600;color:#757575;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Password</div>
-    <input id="svt-pass" type="password" placeholder="••••••••" style="width:100%;padding:12px;border:1.5px solid #E0E0E0;border-radius:8px;font-size:14px;margin-bottom:12px;outline:none;box-sizing:border-box">
+    <input id="svt-pass" type="password" placeholder="••••••••" style="width:100%;padding:12px;border:1.5px solid #E0E0E0;border-radius:8px;font-size:14px;margin-bottom:12px;outline:none;box-sizing:border-box" onkeydown="if(event.key==='Enter')svtLogin()">
     <div id="svt-err" style="display:none;color:#E53935;font-size:13px;margin-bottom:10px;text-align:center;padding:8px;background:#FFEBEE;border-radius:6px"></div>
     <button id="svt-login-btn" onclick="svtLogin()" style="width:100%;padding:13px;background:#FF6B35;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">Sign In</button>
     <div style="font-size:11px;color:#9E9E9E;text-align:center;margin-top:12px">&#128274; Contact your administrator to request an account</div>
@@ -155,8 +151,8 @@
   <button onclick="svtToggleLang()" style="margin-top:16px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);color:#fff;padding:6px 16px;border-radius:20px;font-size:12px;cursor:pointer" id="svt-lang-btn">中文</button>
 </div>
 
-<!-- PROFILE SETUP SCREEN -->
-<div id="svt-profile-setup" style="display:none;font-family:'Segoe UI',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#FF6B35,#E53935);padding:24px">
+<!-- PROFILE SETUP -->
+<div id="svt-profile-setup" style="display:none;font-family:'Segoe UI',sans-serif;min-height:100vh;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#FF6B35,#E53935);padding:24px">
   <div style="font-size:56px;margin-bottom:10px">👤</div>
   <div style="font-size:20px;font-weight:800;color:#fff;margin-bottom:4px">Welcome!</div>
   <div style="font-size:13px;color:rgba(255,255,255,.8);margin-bottom:28px">Complete your profile to continue</div>
@@ -176,13 +172,91 @@
   </div>
 </div>
 
-<div id="app"></div>
+<!-- MAIN APP -->
+<div id="app" style="display:none"></div>
+
 <script>
-// Credentials from config.js
+// ── Supabase client ──
 const SUPABASE_URL = CONFIG.SUPABASE_URL;
 const SUPABASE_KEY = CONFIG.SUPABASE_KEY;
-// Init Supabase JS client
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ── Shared state ──
+const STATE_SVT = { user: null, profile: null };
+
+// ── Screen helpers ──
+function showLoginScreen(){
+  document.getElementById('svt-login').style.display='flex';
+  document.getElementById('svt-profile-setup').style.display='none';
+  document.getElementById('app').style.display='none';
+}
+function showProfileSetup(){
+  document.getElementById('svt-login').style.display='none';
+  document.getElementById('svt-profile-setup').style.display='flex';
+  document.getElementById('app').style.display='none';
+}
+function showApp(){
+  document.getElementById('svt-login').style.display='none';
+  document.getElementById('svt-profile-setup').style.display='none';
+  document.getElementById('app').style.display='block';
+  render();
+  loadViolations();
+}
+
+// ── Auth functions ──
+async function svtLogin(){
+  const email=document.getElementById('svt-email').value.trim();
+  const pass=document.getElementById('svt-pass').value;
+  const err=document.getElementById('svt-err');
+  const btn=document.getElementById('svt-login-btn');
+  if(!email||!pass){err.style.display='block';err.textContent='Please fill in all fields';return;}
+  err.style.display='none';
+  btn.textContent='Signing in...';btn.disabled=true;
+  const{data,error}=await sb.auth.signInWithPassword({email,password:pass});
+  btn.textContent='Sign In';btn.disabled=false;
+  if(error){err.style.display='block';err.textContent=error.message;return;}
+  STATE_SVT.user=data.user;
+  await svtLoadProfile();
+}
+
+async function svtLoadProfile(){
+  const{data,error}=await sb.from('profiles').select('*').eq('id',STATE_SVT.user.id).single();
+  if(error||!data){STATE_SVT.profile=null;showProfileSetup();return;}
+  STATE_SVT.profile=data;
+  showApp();
+}
+
+async function svtSaveProfile(){
+  const name=document.getElementById('svt-ps-name').value.trim();
+  const role=document.getElementById('svt-ps-role').value;
+  const err=document.getElementById('svt-ps-err');
+  const btn=document.getElementById('svt-ps-btn');
+  if(!name||!role){err.style.display='block';err.textContent='Please fill in all fields';return;}
+  err.style.display='none';
+  btn.textContent='Saving...';btn.disabled=true;
+  const{error}=await sb.from('profiles').upsert({id:STATE_SVT.user.id,name,role});
+  btn.textContent='Save & Continue →';btn.disabled=false;
+  if(error){err.style.display='block';err.textContent=error.message;return;}
+  STATE_SVT.profile={id:STATE_SVT.user.id,name,role};
+  setTimeout(()=>showApp(),300);
+}
+
+async function svtForceSignOut(){
+  await sb.auth.signOut();
+  STATE_SVT.user=null;STATE_SVT.profile=null;
+  showLoginScreen();
+}
+
+function svtToggleLang(){
+  state.lang=state.lang==='en'?'zh':'en';
+  localStorage.setItem('svt_lang',state.lang);
+  document.getElementById('svt-lang-btn').textContent=state.lang==='en'?'中文':'EN';
+  render();
+}
+
+// ── Main app JS (original) ──
+
+// Credentials already declared above
 const ADMIN_PASSWORD = 'admin1234';
 const BUCKET = 'safety-violations';
 
@@ -915,125 +989,38 @@ function addProject() {
   if (name.trim()) { state.projects.push(name.trim()); state.newProjectName = ''; state.showAddProject = false; localStorage.setItem('svt_projects', JSON.stringify(state.projects)); render(); }
 }
 
-// Auth handled by new boot section below
-// render() and loadViolations() called from showApp()
+// Auth handled by new boot section
 
 
-// ══════════════════════════════════════════════
-//  NEW SHARED AUTH — Supabase JS Library
-// ══════════════════════════════════════════════
-const STATE_SVT = { user: null, profile: null };
-
-function showLoginScreen() {
-  document.getElementById('svt-login').style.display = 'flex';
-  document.getElementById('svt-profile-setup').style.display = 'none';
-  document.getElementById('app').style.display = 'none';
-}
-function showProfileSetup() {
-  document.getElementById('svt-login').style.display = 'none';
-  document.getElementById('svt-profile-setup').style.display = 'flex';
-  document.getElementById('app').style.display = 'none';
-}
-function showApp() {
-  document.getElementById('svt-login').style.display = 'none';
-  document.getElementById('svt-profile-setup').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  render();
-  loadViolations();
-}
-
-async function svtLogin() {
-  const email = document.getElementById('svt-email').value.trim();
-  const pass = document.getElementById('svt-pass').value;
-  const err = document.getElementById('svt-err');
-  const btn = document.getElementById('svt-login-btn');
-  if (!email || !pass) { err.style.display='block'; err.textContent='Please fill in all fields'; return; }
-  err.style.display = 'none';
-  btn.textContent = 'Signing in...'; btn.disabled = true;
-  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
-  btn.textContent = 'Sign In'; btn.disabled = false;
-  if (error) { err.style.display='block'; err.textContent=error.message; return; }
-  STATE_SVT.user = data.user;
-  await svtLoadProfile();
-}
-
-async function svtLoadProfile() {
-  const { data, error } = await sb.from('profiles').select('*').eq('id', STATE_SVT.user.id).single();
-  if (error || !data) {
-    STATE_SVT.profile = null;
-    showProfileSetup();
-    return;
-  }
-  STATE_SVT.profile = data;
-  showApp();
-}
-
-async function svtSaveProfile() {
-  const name = document.getElementById('svt-ps-name').value.trim();
-  const role = document.getElementById('svt-ps-role').value;
-  const err = document.getElementById('svt-ps-err');
-  const btn = document.getElementById('svt-ps-btn');
-  if (!name || !role) { err.style.display='block'; err.textContent='Please fill in all fields'; return; }
-  err.style.display = 'none';
-  btn.textContent = 'Saving...'; btn.disabled = true;
-  const { error } = await sb.from('profiles').upsert({ id: STATE_SVT.user.id, name, role });
-  btn.textContent = 'Save & Continue →'; btn.disabled = false;
-  if (error) { err.style.display='block'; err.textContent=error.message; return; }
-  STATE_SVT.profile = { id: STATE_SVT.user.id, name, role };
-  setTimeout(() => showApp(), 300);
-}
-
-async function svtForceSignOut() {
-  await sb.auth.signOut();
-  STATE_SVT.user = null; STATE_SVT.profile = null;
-  showLoginScreen();
-}
-
-function svtToggleLang() {
-  state.lang = state.lang === 'en' ? 'zh' : 'en';
-  localStorage.setItem('svt_lang', state.lang);
-  document.getElementById('svt-lang-btn').textContent = state.lang === 'en' ? '中文' : 'EN';
+// ── Service Worker ──
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js',{scope:'./'})
+    .catch(e=>console.log('SW:',e));
 }
 
 // ── Boot ──
-(async () => {
-  const safetyTimer = setTimeout(async () => {
-    await sb.auth.signOut();
-    Object.keys(localStorage).forEach(k => {
-      if (k.includes('supabase') || k.includes('sb-')) localStorage.removeItem(k);
+(async()=>{
+  const safetyTimer=setTimeout(async()=>{
+    try{await sb.auth.signOut();}catch(e){}
+    Object.keys(localStorage).forEach(k=>{
+      if(k.includes('supabase')||k.includes('sb-'))localStorage.removeItem(k);
     });
     showLoginScreen();
-  }, 8000);
-
-  try {
-    const { data: { session }, error } = await sb.auth.getSession();
-    if (error || !session) {
-      clearTimeout(safetyTimer);
-      showLoginScreen();
-      return;
-    }
-    const { data: { user }, error: userErr } = await sb.auth.getUser();
-    if (userErr || !user) {
-      clearTimeout(safetyTimer);
-      await sb.auth.signOut();
-      showLoginScreen();
-      return;
-    }
-    STATE_SVT.user = user;
+  },8000);
+  try{
+    const{data:{session},error}=await sb.auth.getSession();
+    if(error||!session){clearTimeout(safetyTimer);showLoginScreen();return;}
+    const{data:{user},error:ue}=await sb.auth.getUser();
+    if(ue||!user){clearTimeout(safetyTimer);await sb.auth.signOut();showLoginScreen();return;}
+    STATE_SVT.user=user;
     await svtLoadProfile();
     clearTimeout(safetyTimer);
-  } catch (e) {
+  }catch(e){
     clearTimeout(safetyTimer);
-    try { await sb.auth.signOut(); } catch (e2) {}
+    try{await sb.auth.signOut();}catch(e2){}
     showLoginScreen();
   }
 })();
-
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('./sw.js',{scope:'./'})
-    .then(r=>console.log('SW registered:',r.scope))
-    .catch(e=>console.log('SW error:',e));
-}
 </script>
 </body>
 </html>
