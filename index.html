@@ -915,14 +915,8 @@ function addProject() {
   if (name.trim()) { state.projects.push(name.trim()); state.newProjectName = ''; state.showAddProject = false; localStorage.setItem('svt_projects', JSON.stringify(state.projects)); render(); }
 }
 
-// Init — verify auth then load
-const initSession = getSession();
-if (!initSession) {
-  window.location.href = 'login.html';
-} else {
-  render();
-  loadViolations();
-}
+// Auth handled by new boot section below
+// render() and loadViolations() called from showApp()
 
 
 // ══════════════════════════════════════════════
@@ -944,7 +938,8 @@ function showApp() {
   document.getElementById('svt-login').style.display = 'none';
   document.getElementById('svt-profile-setup').style.display = 'none';
   document.getElementById('app').style.display = 'block';
-  render(); // trigger Safety Tracker render
+  render();
+  loadViolations();
 }
 
 async function svtLogin() {
