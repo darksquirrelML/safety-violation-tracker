@@ -1,12 +1,13 @@
 {
   "name": "Safety Violation Tracker",
-  "short_name": "Safety Tracker",
-  "description": "Construction Safety Violation Management",
-  "start_url": "/",
+  "short_name": "SVT",
+  "description": "Construction Safety Management",
+  "start_url": ".",
+  "scope": ".",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#FF6B35",
   "theme_color": "#FF6B35",
-  "orientation": "portrait",
   "icons": [
     {
       "src": "icon-192.png",
