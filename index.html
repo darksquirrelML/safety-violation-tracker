@@ -12,20 +12,11 @@
   <link rel="apple-touch-icon" href="icon-512.png" />
   <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="config.js"></script>
   <script>
     // Redirect to login if not authenticated
-    (function() {
-      try {
-        const session = localStorage.getItem('svt_session');
-        if (!session) { window.location.href = 'login.html'; return; }
-        const s = JSON.parse(session);
-        if (Date.now() > s.expires_at * 1000) {
-          localStorage.removeItem('svt_session');
-          window.location.href = 'login.html';
-        }
-      } catch(e) { window.location.href = 'login.html'; }
-    })();
+    // Auth check handled by Supabase JS library in boot section
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
@@ -147,11 +138,51 @@
   </style>
 </head>
 <body>
+<!-- LOGIN SCREEN -->
+<div id="svt-login" style="display:none;font-family:'Segoe UI',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#FF6B35,#E53935);padding:24px">
+  <div style="font-size:56px;margin-bottom:10px">🦺</div>
+  <div style="font-size:20px;font-weight:800;color:#fff;margin-bottom:4px">Safety Violation Tracker</div>
+  <div style="font-size:13px;color:rgba(255,255,255,.8);margin-bottom:28px">Construction Safety Management</div>
+  <div style="background:#fff;border-radius:16px;padding:24px;width:100%;max-width:360px;box-shadow:0 8px 32px rgba(0,0,0,.2)">
+    <div style="font-size:12px;font-weight:600;color:#757575;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Email</div>
+    <input id="svt-email" type="email" placeholder="your@email.com" style="width:100%;padding:12px;border:1.5px solid #E0E0E0;border-radius:8px;font-size:14px;margin-bottom:12px;outline:none;box-sizing:border-box">
+    <div style="font-size:12px;font-weight:600;color:#757575;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Password</div>
+    <input id="svt-pass" type="password" placeholder="••••••••" style="width:100%;padding:12px;border:1.5px solid #E0E0E0;border-radius:8px;font-size:14px;margin-bottom:12px;outline:none;box-sizing:border-box">
+    <div id="svt-err" style="display:none;color:#E53935;font-size:13px;margin-bottom:10px;text-align:center;padding:8px;background:#FFEBEE;border-radius:6px"></div>
+    <button id="svt-login-btn" onclick="svtLogin()" style="width:100%;padding:13px;background:#FF6B35;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">Sign In</button>
+    <div style="font-size:11px;color:#9E9E9E;text-align:center;margin-top:12px">&#128274; Contact your administrator to request an account</div>
+  </div>
+  <button onclick="svtToggleLang()" style="margin-top:16px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);color:#fff;padding:6px 16px;border-radius:20px;font-size:12px;cursor:pointer" id="svt-lang-btn">中文</button>
+</div>
+
+<!-- PROFILE SETUP SCREEN -->
+<div id="svt-profile-setup" style="display:none;font-family:'Segoe UI',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#FF6B35,#E53935);padding:24px">
+  <div style="font-size:56px;margin-bottom:10px">👤</div>
+  <div style="font-size:20px;font-weight:800;color:#fff;margin-bottom:4px">Welcome!</div>
+  <div style="font-size:13px;color:rgba(255,255,255,.8);margin-bottom:28px">Complete your profile to continue</div>
+  <div style="background:#fff;border-radius:16px;padding:24px;width:100%;max-width:360px;box-shadow:0 8px 32px rgba(0,0,0,.2)">
+    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 14px;font-size:12px;color:#1e40af;margin-bottom:16px">&#128075; One-time setup — you won't be asked again</div>
+    <div style="font-size:12px;font-weight:600;color:#757575;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Full Name *</div>
+    <input id="svt-ps-name" placeholder="e.g. Ahmad Bin Ali" style="width:100%;padding:12px;border:1.5px solid #E0E0E0;border-radius:8px;font-size:14px;margin-bottom:12px;outline:none;box-sizing:border-box">
+    <div style="font-size:12px;font-weight:600;color:#757575;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Role / Position *</div>
+    <select id="svt-ps-role" style="width:100%;padding:12px;border:1.5px solid #E0E0E0;border-radius:8px;font-size:14px;margin-bottom:16px;outline:none;box-sizing:border-box;-webkit-appearance:none;background:#fff">
+      <option value="">Select role...</option>
+      <option>Site Supervisor</option><option>Safety Officer</option><option>Project Manager</option>
+      <option>Foreman</option><option>Engineer</option><option>Inspector</option><option>Other</option>
+    </select>
+    <div id="svt-ps-err" style="display:none;color:#E53935;font-size:13px;margin-bottom:10px;text-align:center;padding:8px;background:#FFEBEE;border-radius:6px"></div>
+    <button onclick="svtSaveProfile()" style="width:100%;padding:13px;background:#FF6B35;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer" id="svt-ps-btn">Save &amp; Continue &rarr;</button>
+    <button onclick="svtForceSignOut()" style="width:100%;padding:10px;background:transparent;color:#9E9E9E;border:1px solid #E0E0E0;border-radius:8px;font-size:13px;cursor:pointer;margin-top:8px">Wrong account? Sign out</button>
+  </div>
+</div>
+
 <div id="app"></div>
 <script>
 // Credentials from config.js
 const SUPABASE_URL = CONFIG.SUPABASE_URL;
 const SUPABASE_KEY = CONFIG.SUPABASE_KEY;
+// Init Supabase JS client
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const ADMIN_PASSWORD = 'admin1234';
 const BUCKET = 'safety-violations';
 
@@ -370,7 +401,7 @@ async function submitReport() {
     if (f.afterPhoto) { afterPath = `${f.project}/after/${ts}_after.jpg`; afterUrl = await uploadPhoto(f.afterPhoto, afterPath); }
     // Save the actual typed violation if Others
     const vtype = f.violationType === 'Others' ? f.othersText.trim() : f.violationType;
-    await supaFetch('violations', { method: 'POST', body: JSON.stringify({ project: f.project, reported_by: f.reportedBy, date: f.date, violation_type: vtype, severity: f.severity, location: f.location, description: f.description, action_taken: f.actionTaken, before_photo_url: beforeUrl, after_photo_url: afterUrl, before_photo_path: beforePath, after_photo_path: afterPath, status: afterUrl ? 'Closed' : 'Open' }) });
+    await supaFetch('violations', { method: 'POST', body: JSON.stringify({ project: f.project, reported_by: STATE_SVT.profile?.name || f.reportedBy, date: f.date, violation_type: vtype, severity: f.severity, location: f.location, description: f.description, action_taken: f.actionTaken, before_photo_url: beforeUrl, after_photo_url: afterUrl, before_photo_path: beforePath, after_photo_path: afterPath, status: afterUrl ? 'Closed' : 'Open' }) });
     showToast(t('reportSuccess'));
     state.form = { project:'',reportedBy:'',date:new Date().toISOString().split('T')[0],violationType:'',othersText:'',severity:'',location:'',description:'',actionTaken:'',beforePhoto:null,afterPhoto:null,beforePreview:null,afterPreview:null };
     state.tab = 'violations';
@@ -548,9 +579,8 @@ function render() {
   const app = document.getElementById('app');
   if (state.selectedViolation) { app.innerHTML = renderDetail(); attachDetailEvents(); return; }
   const newCount = getNewViolations().length;
-  const user = getSession() ? getSession().user : null;
-  const userEmail = user ? user.email.split('@')[0] : '';
-  app.innerHTML = `${renderHeader(userEmail)}${renderNav(newCount)}<div class="content">${state.tab === 'dashboard' ? renderDashboard(newCount) : ''}${state.tab === 'report' ? renderReportForm() : ''}${state.tab === 'violations' ? renderViolationsList() : ''}${state.tab === 'projects' ? renderProjects() : ''}</div>${state.toast ? `<div class="toast">${state.toast}</div>` : ''}`;
+  const userName = STATE_SVT.profile ? STATE_SVT.profile.name : (STATE_SVT.user ? STATE_SVT.user.email.split('@')[0] : '');
+  app.innerHTML = `${renderHeader(userName)}${renderNav(newCount)}<div class="content">${state.tab === 'dashboard' ? renderDashboard(newCount) : ''}${state.tab === 'report' ? renderReportForm() : ''}${state.tab === 'violations' ? renderViolationsList() : ''}${state.tab === 'projects' ? renderProjects() : ''}</div>${state.toast ? `<div class="toast">${state.toast}</div>` : ''}`;
   attachEvents();
 }
 
@@ -852,12 +882,11 @@ function goToProject(project) {
   render();
 }
 
-function doLogout() {
+async function doLogout() {
   if (confirm(state.lang === 'zh' ? '确定要退出登录吗？' : 'Are you sure you want to logout?')) {
-    const token = getAuthToken();
-    if (token) supabaseSignOut(token).catch(() => {});
-    clearSession();
-    window.location.href = 'login.html';
+    await sb.auth.signOut();
+    STATE_SVT.user = null; STATE_SVT.profile = null;
+    showLoginScreen();
   }
 }
 
@@ -894,6 +923,117 @@ if (!initSession) {
   render();
   loadViolations();
 }
+
+
+// ══════════════════════════════════════════════
+//  NEW SHARED AUTH — Supabase JS Library
+// ══════════════════════════════════════════════
+const STATE_SVT = { user: null, profile: null };
+
+function showLoginScreen() {
+  document.getElementById('svt-login').style.display = 'flex';
+  document.getElementById('svt-profile-setup').style.display = 'none';
+  document.getElementById('app').style.display = 'none';
+}
+function showProfileSetup() {
+  document.getElementById('svt-login').style.display = 'none';
+  document.getElementById('svt-profile-setup').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+}
+function showApp() {
+  document.getElementById('svt-login').style.display = 'none';
+  document.getElementById('svt-profile-setup').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  render(); // trigger Safety Tracker render
+}
+
+async function svtLogin() {
+  const email = document.getElementById('svt-email').value.trim();
+  const pass = document.getElementById('svt-pass').value;
+  const err = document.getElementById('svt-err');
+  const btn = document.getElementById('svt-login-btn');
+  if (!email || !pass) { err.style.display='block'; err.textContent='Please fill in all fields'; return; }
+  err.style.display = 'none';
+  btn.textContent = 'Signing in...'; btn.disabled = true;
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+  btn.textContent = 'Sign In'; btn.disabled = false;
+  if (error) { err.style.display='block'; err.textContent=error.message; return; }
+  STATE_SVT.user = data.user;
+  await svtLoadProfile();
+}
+
+async function svtLoadProfile() {
+  const { data, error } = await sb.from('profiles').select('*').eq('id', STATE_SVT.user.id).single();
+  if (error || !data) {
+    STATE_SVT.profile = null;
+    showProfileSetup();
+    return;
+  }
+  STATE_SVT.profile = data;
+  showApp();
+}
+
+async function svtSaveProfile() {
+  const name = document.getElementById('svt-ps-name').value.trim();
+  const role = document.getElementById('svt-ps-role').value;
+  const err = document.getElementById('svt-ps-err');
+  const btn = document.getElementById('svt-ps-btn');
+  if (!name || !role) { err.style.display='block'; err.textContent='Please fill in all fields'; return; }
+  err.style.display = 'none';
+  btn.textContent = 'Saving...'; btn.disabled = true;
+  const { error } = await sb.from('profiles').upsert({ id: STATE_SVT.user.id, name, role });
+  btn.textContent = 'Save & Continue →'; btn.disabled = false;
+  if (error) { err.style.display='block'; err.textContent=error.message; return; }
+  STATE_SVT.profile = { id: STATE_SVT.user.id, name, role };
+  setTimeout(() => showApp(), 300);
+}
+
+async function svtForceSignOut() {
+  await sb.auth.signOut();
+  STATE_SVT.user = null; STATE_SVT.profile = null;
+  showLoginScreen();
+}
+
+function svtToggleLang() {
+  state.lang = state.lang === 'en' ? 'zh' : 'en';
+  localStorage.setItem('svt_lang', state.lang);
+  document.getElementById('svt-lang-btn').textContent = state.lang === 'en' ? '中文' : 'EN';
+}
+
+// ── Boot ──
+(async () => {
+  const safetyTimer = setTimeout(async () => {
+    await sb.auth.signOut();
+    Object.keys(localStorage).forEach(k => {
+      if (k.includes('supabase') || k.includes('sb-')) localStorage.removeItem(k);
+    });
+    showLoginScreen();
+  }, 8000);
+
+  try {
+    const { data: { session }, error } = await sb.auth.getSession();
+    if (error || !session) {
+      clearTimeout(safetyTimer);
+      showLoginScreen();
+      return;
+    }
+    const { data: { user }, error: userErr } = await sb.auth.getUser();
+    if (userErr || !user) {
+      clearTimeout(safetyTimer);
+      await sb.auth.signOut();
+      showLoginScreen();
+      return;
+    }
+    STATE_SVT.user = user;
+    await svtLoadProfile();
+    clearTimeout(safetyTimer);
+  } catch (e) {
+    clearTimeout(safetyTimer);
+    try { await sb.auth.signOut(); } catch (e2) {}
+    showLoginScreen();
+  }
+})();
+
 </script>
 </body>
 </html>
