@@ -4,8 +4,8 @@
 // ============================================================
 
 const CONFIG = {
-  SUPABASE_URL: 'https://zpmjcdbqynebhyprqmrf.supabase.co',
-  SUPABASE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpwbWpjZGJxeW5lYmh5cHJxbXJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg4MDMyNTksImV4cCI6MjA4NDM3OTI1OX0.68k7Ni0EfEVzKOa-tp9_d5QQ0Xh2u1scv_TdGwnXMtE',
+  SUPABASE_URL: 'https://ihwgejsioutzcmkaaumi.supabase.co/rest/v1/',
+  SUPABASE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlod2dlanNpb3V0emNta2FhdW1pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4OTMxMDcsImV4cCI6MjA5MTQ2OTEwN30.951EDcnMQMNzirlMxmxOLi3CmR6suhPNQNqvgvNC9rA',
 };
 
 // ============================================================
