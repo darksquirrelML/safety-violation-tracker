@@ -137,16 +137,36 @@
 <!-- LOGIN SCREEN -->
 <div id="svt-login" style="display:flex;font-family:'Segoe UI',sans-serif;min-height:100vh;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#FF6B35,#E53935);padding:24px">
   <div style="font-size:56px;margin-bottom:10px">🦺</div>
-  <div style="font-size:20px;font-weight:800;color:#fff;margin-bottom:4px">Safety Violation Tracker</div>
-  <div style="font-size:13px;color:rgba(255,255,255,.8);margin-bottom:28px">Construction Safety Management</div>
+  <div style="font-size:20px;font-weight:800;color:#fff;margin-bottom:4px" id="svt-app-title">Safety Violation Tracker</div>
+  <div style="font-size:13px;color:rgba(255,255,255,.8);margin-bottom:28px" id="svt-app-sub">Construction Safety Management</div>
   <div style="background:#fff;border-radius:16px;padding:24px;width:100%;max-width:360px;box-shadow:0 8px 32px rgba(0,0,0,.2)">
-    <div style="font-size:12px;font-weight:600;color:#757575;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Email</div>
-    <input id="svt-email" type="email" placeholder="your@email.com" style="width:100%;padding:12px;border:1.5px solid #E0E0E0;border-radius:8px;font-size:14px;margin-bottom:12px;outline:none;box-sizing:border-box" onkeydown="if(event.key==='Enter')svtLogin()">
-    <div style="font-size:12px;font-weight:600;color:#757575;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Password</div>
-    <input id="svt-pass" type="password" placeholder="••••••••" style="width:100%;padding:12px;border:1.5px solid #E0E0E0;border-radius:8px;font-size:14px;margin-bottom:12px;outline:none;box-sizing:border-box" onkeydown="if(event.key==='Enter')svtLogin()">
-    <div id="svt-err" style="display:none;color:#E53935;font-size:13px;margin-bottom:10px;text-align:center;padding:8px;background:#FFEBEE;border-radius:6px"></div>
-    <button id="svt-login-btn" onclick="svtLogin()" style="width:100%;padding:13px;background:#FF6B35;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">Sign In</button>
-    <div style="font-size:11px;color:#9E9E9E;text-align:center;margin-top:12px">&#128274; Contact your administrator to request an account</div>
+    <!-- Tabs -->
+    <div style="display:flex;background:#F5F5F5;border-radius:8px;padding:4px;margin-bottom:20px">
+      <button id="svt-tab-login" onclick="svtSwitchTab('login')" style="flex:1;padding:8px;text-align:center;font-size:13px;font-weight:600;cursor:pointer;border-radius:6px;border:none;background:white;color:#FF6B35;box-shadow:0 1px 4px rgba(0,0,0,.1)">Login</button>
+      <button id="svt-tab-register" onclick="svtSwitchTab('register')" style="flex:1;padding:8px;text-align:center;font-size:13px;font-weight:600;cursor:pointer;border-radius:6px;border:none;background:none;color:#757575">Register</button>
+    </div>
+    <div id="svt-msg"></div>
+    <!-- Login Form -->
+    <div id="svt-login-form">
+      <div style="font-size:12px;font-weight:600;color:#757575;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Email</div>
+      <input id="svt-email" type="email" placeholder="your@email.com" style="width:100%;padding:12px;border:1.5px solid #E0E0E0;border-radius:8px;font-size:14px;margin-bottom:12px;outline:none;box-sizing:border-box" onkeydown="if(event.key==='Enter')svtLogin()">
+      <div style="font-size:12px;font-weight:600;color:#757575;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Password</div>
+      <input id="svt-pass" type="password" placeholder="••••••••" style="width:100%;padding:12px;border:1.5px solid #E0E0E0;border-radius:8px;font-size:14px;margin-bottom:12px;outline:none;box-sizing:border-box" onkeydown="if(event.key==='Enter')svtLogin()">
+      <div id="svt-err" style="display:none;color:#E53935;font-size:13px;margin-bottom:10px;text-align:center;padding:8px;background:#FFEBEE;border-radius:6px"></div>
+      <button id="svt-login-btn" onclick="svtLogin()" style="width:100%;padding:13px;background:#FF6B35;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">Login</button>
+    </div>
+    <!-- Register Form -->
+    <div id="svt-register-form" style="display:none">
+      <div style="font-size:12px;font-weight:600;color:#757575;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Email</div>
+      <input id="svt-reg-email" type="email" placeholder="your@email.com" style="width:100%;padding:12px;border:1.5px solid #E0E0E0;border-radius:8px;font-size:14px;margin-bottom:12px;outline:none;box-sizing:border-box">
+      <div style="font-size:12px;font-weight:600;color:#757575;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Password</div>
+      <input id="svt-reg-pass" type="password" placeholder="Min 6 characters" style="width:100%;padding:12px;border:1.5px solid #E0E0E0;border-radius:8px;font-size:14px;margin-bottom:12px;outline:none;box-sizing:border-box">
+      <div style="font-size:12px;font-weight:600;color:#757575;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Confirm Password</div>
+      <input id="svt-reg-confirm" type="password" placeholder="Repeat password" style="width:100%;padding:12px;border:1.5px solid #E0E0E0;border-radius:8px;font-size:14px;margin-bottom:12px;outline:none;box-sizing:border-box">
+      <div id="svt-reg-err" style="display:none;color:#E53935;font-size:13px;margin-bottom:10px;text-align:center;padding:8px;background:#FFEBEE;border-radius:6px"></div>
+      <button id="svt-reg-btn" onclick="svtRegister()" style="width:100%;padding:13px;background:#FF6B35;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">Create Account</button>
+      <div style="font-size:11px;color:#9E9E9E;text-align:center;margin-top:10px">You will receive a verification email. Please verify before logging in.</div>
+    </div>
   </div>
   <button onclick="svtToggleLang()" style="margin-top:16px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);color:#fff;padding:6px 16px;border-radius:20px;font-size:12px;cursor:pointer" id="svt-lang-btn">中文</button>
 </div>
@@ -204,6 +224,45 @@ function showApp(){
 }
 
 // ── Auth functions ──
+function svtSwitchTab(tab){
+  const loginForm=document.getElementById('svt-login-form');
+  const regForm=document.getElementById('svt-register-form');
+  const tabLogin=document.getElementById('svt-tab-login');
+  const tabReg=document.getElementById('svt-tab-register');
+  const msg=document.getElementById('svt-msg');
+  if(tab==='login'){
+    loginForm.style.display='block';regForm.style.display='none';
+    tabLogin.style.cssText='flex:1;padding:8px;text-align:center;font-size:13px;font-weight:600;cursor:pointer;border-radius:6px;border:none;background:white;color:#FF6B35;box-shadow:0 1px 4px rgba(0,0,0,.1)';
+    tabReg.style.cssText='flex:1;padding:8px;text-align:center;font-size:13px;font-weight:600;cursor:pointer;border-radius:6px;border:none;background:none;color:#757575';
+  } else {
+    loginForm.style.display='none';regForm.style.display='block';
+    tabReg.style.cssText='flex:1;padding:8px;text-align:center;font-size:13px;font-weight:600;cursor:pointer;border-radius:6px;border:none;background:white;color:#FF6B35;box-shadow:0 1px 4px rgba(0,0,0,.1)';
+    tabLogin.style.cssText='flex:1;padding:8px;text-align:center;font-size:13px;font-weight:600;cursor:pointer;border-radius:6px;border:none;background:none;color:#757575';
+  }
+  if(msg)msg.innerHTML='';
+}
+
+async function svtRegister(){
+  const email=document.getElementById('svt-reg-email').value.trim();
+  const pass=document.getElementById('svt-reg-pass').value;
+  const confirm=document.getElementById('svt-reg-confirm').value;
+  const err=document.getElementById('svt-reg-err');
+  const btn=document.getElementById('svt-reg-btn');
+  if(!email||!pass||!confirm){err.style.display='block';err.textContent='Please fill in all fields';return;}
+  if(pass!==confirm){err.style.display='block';err.textContent='Passwords do not match';return;}
+  if(pass.length<6){err.style.display='block';err.textContent='Password must be at least 6 characters';return;}
+  err.style.display='none';
+  btn.textContent='Creating...';btn.disabled=true;
+  const{error}=await sb.auth.signUp({email,password:pass});
+  btn.textContent='Create Account';btn.disabled=false;
+  if(error){err.style.display='block';err.textContent=error.message;return;}
+  // Show success message
+  const msg=document.getElementById('svt-msg');
+  if(msg)msg.innerHTML='<div style="color:#2E7D32;font-size:13px;margin-bottom:12px;text-align:center;padding:8px;background:#E8F5E9;border-radius:6px">&#10003; Account created! Please check your email to verify.</div>';
+  // Switch to login tab after 2 seconds
+  setTimeout(()=>svtSwitchTab('login'),2000);
+}
+
 async function svtLogin(){
   const email=document.getElementById('svt-email').value.trim();
   const pass=document.getElementById('svt-pass').value;
