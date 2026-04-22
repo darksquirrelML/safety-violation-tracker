@@ -442,15 +442,50 @@ function saveSession() {
 }
 
 function getNewViolations(project=null) {
+  // Use new per-user seen tracking
+  return getUnseenViolations(project);
+}
+
+function getSeenKey() {
+  // Unique key per user
+  const uid = STATE_SVT.user ? STATE_SVT.user.id.slice(0,8) : 'anon';
+  return 'svt_seen_' + uid;
+}
+
+function getSeenIds() {
+  try { return JSON.parse(localStorage.getItem(getSeenKey()) || '[]'); }
+  catch(e) { return []; }
+}
+
+function markViolationSeen(id) {
+  const seen = getSeenIds();
+  if (!seen.includes(id)) {
+    seen.push(id);
+    localStorage.setItem(getSeenKey(), JSON.stringify(seen));
+  }
+  // Update badge
+  const unseen = getUnseenViolations();
+  updateBadge(unseen.length);
+}
+
+function getUnseenViolations(project=null) {
+  const seen = getSeenIds();
+  const myId = STATE_SVT.user ? STATE_SVT.user.id : null;
   return state.violations.filter(v => {
-    const isNew = new Date(v.created_at).getTime() > state.lastSeenTime;
-    return project ? isNew && v.project === project : isNew;
+    // Don't count own violations as unseen
+    if (v.submitted_by === myId) return false;
+    const isUnseen = !seen.includes(v.id);
+    return project ? isUnseen && v.project === project : isUnseen;
   });
 }
 
 function markAllSeen() {
-  state.lastSeenTime = Date.now();
-  localStorage.setItem('svt_lastSeenTime', state.lastSeenTime);
+  // Mark all current violations as seen
+  const seen = getSeenIds();
+  state.violations.forEach(v => {
+    if (!seen.includes(v.id)) seen.push(v.id);
+  });
+  localStorage.setItem(getSeenKey(), JSON.stringify(seen));
   updateBadge(0);
   render();
 }
@@ -517,7 +552,9 @@ async function loadViolations() {
   try { state.violations = await supaFetch('violations?order=created_at.desc', { headers: { 'Range': '0-499' } }); }
   catch (e) { console.error(e); state.violations = []; }
   state.loading = false; render();
-  updateBadge(getNewViolations().length);
+  // Update badge with unseen count
+  const unseen = getUnseenViolations();
+  updateBadge(unseen.length);
 }
 
 async function submitReport() {
@@ -534,7 +571,8 @@ async function submitReport() {
     if (f.afterPhoto) { afterPath = `${f.project}/after/${ts}_after.jpg`; afterUrl = await uploadPhoto(f.afterPhoto, afterPath); }
     // Save the actual typed violation if Others
     const vtype = f.violationType === 'Others' ? f.othersText.trim() : f.violationType;
-    await supaFetch('violations', { method: 'POST', body: JSON.stringify({ project: f.project, reported_by: STATE_SVT.profile?.name || f.reportedBy, date: f.date, violation_type: vtype, severity: f.severity, location: f.location, description: f.description, action_taken: f.actionTaken, before_photo_url: beforeUrl, after_photo_url: afterUrl, before_photo_path: beforePath, after_photo_path: afterPath, status: afterUrl ? 'Closed' : 'Open' }) });
+    await supaFetch('violations', { method: 'POST', body: JSON.stringify({ project: f.project, reported_by: STATE_SVT.profile?.name || f.reportedBy,
+      submitted_by: STATE_SVT.user?.id, date: f.date, violation_type: vtype, severity: f.severity, location: f.location, description: f.description, action_taken: f.actionTaken, before_photo_url: beforeUrl, after_photo_url: afterUrl, before_photo_path: beforePath, after_photo_path: afterPath, status: afterUrl ? 'Closed' : 'Open' }) });
     showToast(t('reportSuccess'));
     state.form = { project:'',reportedBy:'',date:new Date().toISOString().split('T')[0],violationType:'',othersText:'',severity:'',location:'',description:'',actionTaken:'',beforePhoto:null,afterPhoto:null,beforePreview:null,afterPreview:null };
     state.tab = 'violations';
@@ -1040,6 +1078,8 @@ function setFilter(f) { state.filter = f; render(); }
 function selectViolation(id) {
   state.selectedViolation = state.violations.find(v => v.id === id);
   state.editMode = false; state.deleteViolationConfirm = false; state.deleteConfirm = false; state.adminPw = '';
+  // Mark this violation as seen by current user
+  markViolationSeen(id);
   render();
 }
 
